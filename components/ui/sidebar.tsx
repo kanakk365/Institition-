@@ -1,0 +1,525 @@
+"use client"
+
+import { useState, createContext, useContext, useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  LayoutDashboard,
+  Users,
+  FlaskConical,
+  FileQuestion,
+  FileText,
+  GraduationCap,
+  LogOut,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Eye,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/AuthContext"
+
+// Create Sidebar Context
+const SidebarContext = createContext<{
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+} | null>(null);
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
+export function useSidebar() {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+}
+
+const navigationItems = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: GraduationCap, label: "Class", href: "/classes" },
+  { icon: Users, label: "Students", href: "/students" },  
+  { icon: FlaskConical, label: "Project Lab", href: "/projects" },
+  { icon: FileQuestion, label: "Quizzes", href: "/quizzes" },
+  { icon: FileText, label: "Exams", href: "/exams" },
+  { icon: FileText, label: "Custom Exam", href: "/custom-exam" },
+  { icon: FileQuestion, label: "Custom Quiz", href: "/custom-quiz" },
+]
+
+const quizSubNavigation = [
+  { name: "View Quiz", href: "/quizzes", icon: Eye },
+  { name: "Create Quiz", href: "/quizzes/create/grade", icon: Plus },
+]
+
+const projectSubNavigation = [
+  { name: "View Projects", href: "/projects", icon: Eye },
+  { name: "Create Project", href: "/projects/create", icon: Plus },
+]
+
+const examSubNavigation = [
+  { name: "View Exams", href: "/exams", icon: Eye },
+  { name: "Create Exam", href: "/exams/create/grade", icon: Plus },
+]
+
+const customExamSubNavigation = [
+  { name: "View Custom Exams", href: "/custom-exam", icon: Eye },
+  { name: "Create Custom Exam", href: "/custom-exam/grade", icon: Plus },
+]
+
+const customQuizSubNavigation = [
+  { name: "View Custom Quizzes", href: "/custom-quiz", icon: Eye },
+  { name: "Create Custom Quiz", href: "/custom-quiz/grade", icon: Plus },
+]
+const bottomItems = [
+  { icon: LogOut, label: "Logout", href: "/logout" },
+]
+
+interface SidebarProps {
+  className?: string;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
+}
+
+export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed: externalSetCollapsed }: SidebarProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const { institution, logout } = useAuth()
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [isQuizzesExpanded, setIsQuizzesExpanded] = useState(false)
+  const [isProjectsExpanded, setIsProjectsExpanded] = useState(false)
+  const [isExamsExpanded, setIsExamsExpanded] = useState(false)
+  const [isCustomExamsExpanded, setIsCustomExamsExpanded] = useState(false)
+  const [isCustomQuizzesExpanded, setIsCustomQuizzesExpanded] = useState(false)
+
+  // Use external collapsed state if provided, otherwise use internal state
+  const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalIsCollapsed
+  const setIsCollapsed = externalSetCollapsed || setInternalIsCollapsed
+
+  // Auto-expand sections when on respective pages
+  useEffect(() => {
+    if (pathname.startsWith('/quizzes')) {
+      setIsQuizzesExpanded(true)
+    }
+    if (pathname.startsWith('/projects')) {
+      setIsProjectsExpanded(true)
+    }
+    if (pathname.startsWith('/exams')) {
+      setIsExamsExpanded(true)
+    }
+    if (pathname.startsWith('/custom-exam')) {
+      setIsCustomExamsExpanded(true)
+    }
+    if (pathname.startsWith('/custom-quiz')) {
+      setIsCustomQuizzesExpanded(true)
+    }
+  }, [pathname])
+
+  const handleNavigation = (href: string) => {
+    if (href === '/logout') {
+      console.log('=== LOGOUT BUTTON CLICKED ===');
+      console.log('About to call logout function...');
+      
+      try {
+        logout();
+        console.log('Logout function completed successfully');
+        
+        console.log('Navigating to login page...');
+        router.push('/login');
+        
+        // Force a page reload to ensure all state is cleared
+        setTimeout(() => {
+          console.log('Force redirecting to login page...');
+          window.location.href = '/login';
+        }, 500);
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+      
+      return;
+    }
+    router.push(href)
+    setIsMobileOpen(false) // Close mobile menu after navigation
+  }
+
+  return (
+    <>
+      {/* Mobile Hamburger Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 md:hidden"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          aria-label="Close sidebar overlay"
+          tabIndex={0}
+          onClick={() => setIsMobileOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setIsMobileOpen(false)
+            }
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "fixed left-0 top-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
+          isCollapsed ? "w-16" : "w-64",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          className,
+        )}
+      >
+        {/* Header */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <h1 className="text-lg text-gray-900">LOGO</h1>
+              <p className="text-sm text-gray-600">{institution?.name || 'Cambridge International School'}</p>
+            </div>
+          )}
+
+          {/* Collapse/Expand Button - Desktop only */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex h-8 w-8"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+        </div>
+
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-hide">
+        {navigationItems.map((item) => {
+          const isActive = pathname === item.href || 
+            (item.label === "Students" && pathname.startsWith("/students")) ||
+            (item.label === "Quizzes" && pathname.startsWith("/quizzes")) ||
+            (item.label === "Project Lab" && pathname.startsWith("/projects")) ||
+            (item.label === "Exams" && pathname.startsWith("/exams")) ||
+            (item.label === "Custom Exam" && pathname.startsWith("/custom-exam")) ||
+            (item.label === "Custom Quiz" && pathname.startsWith("/custom-quiz"))
+
+          // Function to close all sub-menus
+          const closeAllSubMenus = () => {
+            setIsQuizzesExpanded(false);
+            setIsProjectsExpanded(false);
+            setIsExamsExpanded(false);
+            setIsCustomExamsExpanded(false);
+            setIsCustomQuizzesExpanded(false);
+          }
+
+          return (
+            <div key={item.label}>
+              {item.label === "Quizzes" ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    closeAllSubMenus();
+                    setIsQuizzesExpanded(true);
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              ) : item.label === "Project Lab" ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    closeAllSubMenus();
+                    setIsProjectsExpanded(true);
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              ) : item.label === "Exams" ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    closeAllSubMenus();
+                    setIsExamsExpanded(true);
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              ) : item.label === "Custom Exam" ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    closeAllSubMenus();
+                    setIsCustomExamsExpanded(true);
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              ) : item.label === "Custom Quiz" ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    closeAllSubMenus();
+                    setIsCustomQuizzesExpanded(true);
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              ) : (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      : "text-gray-700 hover:bg-gray-100",
+                  )}
+                  onClick={() => {
+                    // Close all sub-menus when clicking on non-expandable items
+                    closeAllSubMenus();
+                    setIsMobileOpen(false);
+                  }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {!isCollapsed && item.label}
+                </Link>
+              )}
+
+              {/* Quiz Sub-navigation */}
+              {item.label === "Quizzes" && isQuizzesExpanded && !isCollapsed && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {quizSubNavigation.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                      )}
+                      style={
+                        pathname === subItem.href
+                          ? {
+                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <subItem.icon className="w-4 h-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Project Sub-navigation */}
+              {item.label === "Project Lab" && isProjectsExpanded && !isCollapsed && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {projectSubNavigation.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                      )}
+                      style={
+                        pathname === subItem.href
+                          ? {
+                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <subItem.icon className="w-4 h-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Exam Sub-navigation */}
+              {item.label === "Exams" && isExamsExpanded && !isCollapsed && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {examSubNavigation.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                      )}
+                      style={
+                        pathname === subItem.href
+                          ? {
+                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <subItem.icon className="w-4 h-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Custom Exam Sub-navigation */}
+              {item.label === "Custom Exam" && isCustomExamsExpanded && !isCollapsed && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {customExamSubNavigation.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                      )}
+                      style={
+                        pathname === subItem.href
+                          ? {
+                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <subItem.icon className="w-4 h-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Custom Quiz Sub-navigation */}
+              {item.label === "Custom Quiz" && isCustomQuizzesExpanded && !isCollapsed && (
+                <div className="ml-4 mt-1 space-y-1">
+                  {customQuizSubNavigation.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                      )}
+                      style={
+                        pathname === subItem.href
+                          ? {
+                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                            }
+                          : undefined
+                      }
+                    >
+                      <subItem.icon className="w-4 h-4" />
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </nav>
+
+        {/* Bottom Section */}
+        <div className="p-4 border-t border-gray-200 space-y-2">
+          {bottomItems.map((item) => (
+            <Button
+              key={item.label}
+              variant="ghost"
+              onClick={() => handleNavigation(item.href)}
+              className={cn("w-full justify-start h-10 text-gray-700 hover:text-gray-900", isCollapsed && "px-2")}
+            >
+              <item.icon className={cn("h-5 w-5", !isCollapsed && "mr-3")} />
+              {!isCollapsed && <span>{item.label}</span>}
+            </Button>
+          ))}
+
+          {/* User Profile */}
+          {!isCollapsed && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 mt-4">
+              <Avatar className="h-10 w-10">
+                {institution?.profilePhotoUrl ? (
+                  <AvatarImage src={institution.profilePhotoUrl} alt={institution.name} />
+                ) : null}
+                <AvatarFallback
+                  className="font-semibold"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                  }}
+                >
+                  {institution?.name?.charAt(0)?.toUpperCase() || 'S'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-600">Welcome 👋</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{institution?.name || 'School'}</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
