@@ -87,7 +87,7 @@ export default function QuizDetailPage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
       case 'easy':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[var(--primary-50)] text-[color:var(--primary-800)]';
       case 'medium':
         return 'bg-yellow-100 text-yellow-800';
       case 'hard':
@@ -104,7 +104,7 @@ export default function QuizDetailPage() {
         <div className="flex-1 p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)] mx-auto mb-4"></div>
               <p className="text-gray-600 text-lg">Loading quiz details...</p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function QuizDetailPage() {
           <button
             type="button"
             onClick={handleBack}
-            className="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
+            className="mt-4 px-6 py-2 rounded-lg transition-colors bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
           >
             Back to Quizzes
           </button>
@@ -157,11 +157,11 @@ export default function QuizDetailPage() {
         {/* Quiz Overview Card */}
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden mb-6">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-green-400 to-green-500 p-6 text-white">
+          <div className="bg-gradient-to-r from-[color:var(--primary-500)] to-[color:var(--primary-600)] p-6 text-[color:var(--primary-foreground)]">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h2 className="text-2xl font-bold mb-2">{quiz.title}</h2>
-                <p className="text-green-100 mb-4">{quiz.instructions}</p>
+                <p className="text-[color:var(--primary-100)] mb-4">{quiz.instructions}</p>
                 <div className="flex items-center space-x-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(quiz.difficulty)} bg-opacity-20`}>
                     {quiz.difficulty}
@@ -174,7 +174,7 @@ export default function QuizDetailPage() {
               <div className="text-right">
                 <div className="bg-white bg-opacity-20 rounded-lg p-3">
                   <div className="text-3xl font-bold">{quiz.timeLimitMinutes}</div>
-                  <div className="text-sm text-green-100">minutes</div>
+                  <div className="text-sm text-[color:var(--primary-100)]">minutes</div>
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function QuizDetailPage() {
                 <div className="text-gray-600">Questions</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-1">{quiz.SubmitQuiz.length}</div>
+                <div className="text-3xl font-bold text-[color:var(--primary-600)] mb-1">{quiz.SubmitQuiz.length}</div>
                 <div className="text-gray-600">Submissions</div>
               </div>
               <div className="text-center">
@@ -233,8 +233,8 @@ export default function QuizDetailPage() {
               {quiz.questions.map((question, index) => (
                 <div key={question.id} className="border border-gray-200 rounded-lg p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <span className="text-green-600 font-medium text-sm">{index + 1}</span>
+                    <div className="flex-shrink-0 w-8 h-8 bg-[var(--primary-50)] rounded-full flex items-center justify-center">
+                      <span className="text-[color:var(--primary-600)] font-medium text-sm">{index + 1}</span>
                     </div>
                     <div className="flex-1">
                       <h4 className="text-lg font-medium text-gray-900 mb-4">{question.questionText}</h4>
@@ -244,23 +244,23 @@ export default function QuizDetailPage() {
                             key={option.id}
                             className={`p-3 rounded-lg border-2 transition-colors ${
                               option.isCorrect
-                                ? 'border-green-300 bg-green-50'
+                                ? 'border-[color:var(--primary-300)] bg-[var(--primary-50)]'
                                 : 'border-gray-200 bg-gray-50'
                             }`}
                           >
                             <div className="flex items-center space-x-3">
                               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
                                 option.isCorrect
-                                  ? 'bg-green-500 text-white'
+                                  ? 'bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)]'
                                   : 'bg-gray-300 text-gray-600'
                               }`}>
                                 {String.fromCharCode(65 + optionIndex)}
                               </div>
-                              <span className={`${option.isCorrect ? 'text-green-800 font-medium' : 'text-gray-700'}`}>
+                              <span className={`${option.isCorrect ? 'text-[color:var(--primary-800)] font-medium' : 'text-gray-700'}`}>
                                 {option.optionText}
                               </span>
                               {option.isCorrect && (
-                                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-5 h-5 text-[color:var(--primary-500)]" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               )}

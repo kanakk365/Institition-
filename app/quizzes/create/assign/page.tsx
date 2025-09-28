@@ -141,7 +141,7 @@ export default function QuizAssignPage() {
       return (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)] mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg">Loading...</p>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function QuizAssignPage() {
                 type="button"
                 onClick={handleGenerateQuiz}
                 disabled={isGenerating}
-                className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50"
+                className="px-8 py-2 rounded-lg disabled:opacity-50 bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
               >
                 {isGenerating ? 'Generating...' : 'Confirm'}
               </button>
@@ -265,8 +265,8 @@ export default function QuizAssignPage() {
           <div className="p-6">
             <div className="text-center">
               <div className="mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-green-600 text-2xl">✓</span>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-[var(--primary-50)]">
+                  <span className="text-[color:var(--primary-600)] text-2xl">✓</span>
                 </div>
                 <h1 className="text-2xl font-semibold text-gray-900 mb-2">Quiz Generated Successfully!</h1>
                 <p className="text-gray-600">Your quiz has been created and is ready to be assigned to students.</p>
@@ -283,7 +283,7 @@ export default function QuizAssignPage() {
                 <button
                   type="button"
                   onClick={() => router.push('/quizzes/create/grade')}
-                  className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+                  className="px-8 py-2 rounded-lg bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
                 >
                   Create Another Quiz
                 </button>

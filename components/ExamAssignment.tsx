@@ -60,7 +60,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                 placeholder="Enter Title" 
                 value={formData.examTitle}
                 onChange={(e) => handleInputChange('examTitle', e.target.value)}
-                className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
               />
             </div>
             <div className="space-y-3">
@@ -70,7 +70,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                 placeholder="Math, Science, EVS, English" 
                 value={formData.subject}
                 onChange={(e) => handleInputChange('subject', e.target.value)}
-                className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
               />
             </div>
           </div>
@@ -84,7 +84,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                 placeholder="Enter Description" 
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
               />
             </div>
             <div className="space-y-3">
@@ -94,7 +94,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                 placeholder="Class Test, Unit Test, Term Exam, Practice" 
                 value={formData.examType}
                 onChange={(e) => handleInputChange('examType', e.target.value)}
-                className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
               />
             </div>
           </div>
@@ -109,7 +109,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                   placeholder="e.g., 27 June 2025" 
                   value={formData.dueDate}
                   onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700 pr-12"
+                  className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] pr-12"
                 />
                 <Calendar className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               </div>
@@ -121,7 +121,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
                 placeholder="5, 10, 15 minutes" 
                 value={formData.timeLimit}
                 onChange={(e) => handleInputChange('timeLimit', e.target.value)}
-                className="h-12 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                className="h-12 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
           </Button>
           <Button 
             onClick={handleSubmit} 
-            className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white"
+            className="px-8 py-2 bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
           >
             Create Exam
           </Button>

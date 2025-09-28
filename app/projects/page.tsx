@@ -78,7 +78,7 @@ export default function ProjectsPage() {
               placeholder="Search projects here"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-80 pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-80 pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[color:var(--primary-400)] focus:border-[color:var(--primary-400)]"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@ export default function ProjectsPage() {
         
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
           </div>
         ) : error ? (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">

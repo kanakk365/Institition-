@@ -60,7 +60,7 @@ export function SectionSelection({ grade }: SectionSelectionProps) {
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold text-gray-900">Loading...</h1>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
         </div>
       </div>
     )

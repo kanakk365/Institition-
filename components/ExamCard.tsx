@@ -27,7 +27,7 @@ export function ExamCard({
   return (
     <div className="flex flex-row bg-[#393e3a] rounded-2xl p-8 mb-6 shadow-lg max-w-3xl w-full items-center">
       <div className="flex-1">
-        <div className="text-green-400 font-semibold mb-1">
+  <div className="text-[color:var(--primary-300)] font-semibold mb-1">
           Subject: {exam.subject || "N/A"}
         </div>
         <div className="text-2xl font-bold text-white mb-2">{exam.title}</div>
@@ -46,7 +46,7 @@ export function ExamCard({
             : "-"}
         </div>
         <button
-          className="bg-[#007437] text-white rounded-lg px-6 py-2 font-semibold shadow hover:bg-green-700 transition"
+          className="px-6 py-2 font-semibold transition rounded-lg shadow bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
           onClick={onStart}
         >
           {buttonText}

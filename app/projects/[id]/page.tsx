@@ -108,7 +108,7 @@ export default function ProjectDetailsPage() {
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
           </div>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function ProjectDetailsPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center space-x-4 mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Class Projects</h1>
-          <Badge className="bg-green-100 text-green-800">
+          <Badge className="bg-[var(--primary-50)] text-[color:var(--primary-800)]">
             {projects[0]?.standardName} - Section {projects[0]?.sectionName}
           </Badge>
         </div>
@@ -146,7 +146,7 @@ export default function ProjectDetailsPage() {
             >
               <div className="flex items-center space-x-4">
                 <h2 className="text-lg font-medium text-gray-900">{project.title}</h2>
-                <Badge className="bg-green-100 text-green-800">Active</Badge>
+                <Badge className="bg-[var(--primary-50)] text-[color:var(--primary-800)]">Active</Badge>
               </div>
               <div className="flex items-center space-x-2">
                 <Button 
@@ -234,7 +234,7 @@ export default function ProjectDetailsPage() {
                   
                   {project.assignedStudents.length > 0 ? (
                     <div className="bg-gray-50 rounded-lg overflow-hidden">
-                      <div className="bg-green-400 text-white grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium">
+                      <div className="grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)]">
                         <div>Student Name</div>
                         <div>Email</div>
                         <div>Status</div>
@@ -245,7 +245,7 @@ export default function ProjectDetailsPage() {
                           <div className="text-gray-900">{student.name}</div>
                           <div className="text-gray-600">{student.email}</div>
                           <div>
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-[var(--primary-50)] text-[color:var(--primary-800)]">
                               Assigned
                             </Badge>
                           </div>
@@ -253,7 +253,7 @@ export default function ProjectDetailsPage() {
                             <Badge 
                               className={
                                 student.isCompleted 
-                                  ? "bg-green-100 text-green-800"
+                                  ? "bg-[var(--primary-50)] text-[color:var(--primary-800)]"
                                   : "bg-yellow-100 text-yellow-800"
                               }
                             >

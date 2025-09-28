@@ -100,10 +100,10 @@ export default function CreateClassPage() {
                     </div>
                   )}
                   {success && (
-                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg shadow-sm">
+                    <div className="bg-[var(--primary-50)] border-l-4 border-[color:var(--primary-300)] p-4 rounded-lg shadow-sm">
                       <div className="flex items-center">
-                        <span className="text-green-500 text-xl mr-3">✅</span>
-                        <p className="text-green-700 font-medium">{success}</p>
+                        <span className="text-[color:var(--primary-600)] text-xl mr-3">✅</span>
+                        <p className="text-[color:var(--primary-700)] font-medium">{success}</p>
                       </div>
                     </div>
                   )}
@@ -125,7 +125,7 @@ export default function CreateClassPage() {
                           value={formData.classGrade}
                           onValueChange={(value) => setFormData({ ...formData, classGrade: value })}
                         >
-                          <SelectTrigger className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all">
+                          <SelectTrigger className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all">
                             <SelectValue placeholder="Grade 1-10" />
                           </SelectTrigger>
                           <SelectContent>
@@ -149,7 +149,7 @@ export default function CreateClassPage() {
                           value={formData.institution}
                           onValueChange={(value) => setFormData({ ...formData, institution: value })}
                         >
-                          <SelectTrigger className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all">
+                          <SelectTrigger className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all">
                             <SelectValue placeholder="School, college, high school" />
                           </SelectTrigger>
                           <SelectContent>
@@ -172,7 +172,7 @@ export default function CreateClassPage() {
                         placeholder="Enter email"
                         value={formData.classEmail}
                         onChange={(e) => setFormData({ ...formData, classEmail: e.target.value })}
-                        className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all"
+                        className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] placeholder:text-[color:var(--primary-500)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all"
                       />
                     </div>
                   </div>
@@ -188,7 +188,7 @@ export default function CreateClassPage() {
                         placeholder="Enter section"
                         value={formData.sections}
                         onChange={(e) => setFormData({ ...formData, sections: e.target.value })}
-                        className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all"
+                        className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] placeholder:text-[color:var(--primary-500)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all"
                       />
                     </div>
 
@@ -201,7 +201,7 @@ export default function CreateClassPage() {
                         placeholder="Enter name"
                         value={formData.teacherName}
                         onChange={(e) => setFormData({ ...formData, teacherName: e.target.value })}
-                        className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all"
+                        className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] placeholder:text-[color:var(--primary-500)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all"
                       />
                     </div>
 
@@ -215,7 +215,7 @@ export default function CreateClassPage() {
                           value={formData.academicYear}
                           onValueChange={(value) => setFormData({ ...formData, academicYear: value })}
                         >
-                          <SelectTrigger className="w-full h-14 px-5 bg-green-50 border-0 rounded-lg text-gray-600 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all">
+                          <SelectTrigger className="w-full h-14 px-5 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg text-[color:var(--primary-700)] focus:ring-2 focus:ring-[color:var(--primary-300)] focus:border-[color:var(--primary-400)] focus:bg-white transition-all">
                             <SelectValue placeholder="e.g. 2024-25" />
                           </SelectTrigger>
                           <SelectContent>
@@ -244,7 +244,7 @@ export default function CreateClassPage() {
                   <Button 
                     type="submit" 
                     disabled={loading || !formData.classGrade.trim()}
-                    className="px-10 py-4 h-14 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="px-10 py-4 h-14 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
                   >
                     {loading ? (
                       <span className="flex items-center">

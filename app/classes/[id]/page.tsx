@@ -127,7 +127,7 @@ export default function ClassDetailsPage() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function ClassDetailsPage() {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900">{classStats.grade}</h1>
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+          <Badge className="bg-[var(--primary-100)] text-[color:var(--primary-800)] hover:bg-[var(--primary-100)]">
             Active
           </Badge>
         </div>
@@ -163,7 +163,7 @@ export default function ClassDetailsPage() {
             <button
               type="button"
               onClick={() => toggleSection("students")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50"
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
             >
               <h2 className="text-lg font-semibold text-gray-900">Students</h2>
               <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export default function ClassDetailsPage() {
             </button>
 
             {expandedSections.students && (
-              <div className="border-t border-gray-100 p-4 space-y-4">
+              <div className="border-t border-[color:var(--primary-100)] p-4 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Total Students</p>
@@ -189,7 +189,7 @@ export default function ClassDetailsPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Status</p>
-                    <Badge className="bg-green-100 text-green-800">
+                    <Badge className="bg-[var(--primary-100)] text-[color:var(--primary-800)]">
                       Active
                     </Badge>
                   </div>
@@ -220,7 +220,7 @@ export default function ClassDetailsPage() {
             <button
               type="button"
               onClick={() => toggleSection("quizzes")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50"
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
             >
               <h2 className="text-lg font-semibold text-gray-900">Quizzes</h2>
               <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function ClassDetailsPage() {
 
             {expandedSections.quizzes && (
               <div className="overflow-hidden">
-                <div className="bg-green-400 text-white grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
+                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
                   <div>Quiz Title</div>
                   <div>Subject</div>
                   <div>Score</div>
@@ -243,7 +243,7 @@ export default function ClassDetailsPage() {
                   <div>Date</div>
                 </div>
                 {quizData.map((quiz, index) => (
-                  <div key={`${quiz.title}-${quiz.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-gray-100 text-sm">
+                  <div key={`${quiz.title}-${quiz.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
                     <div className="text-gray-900">{quiz.title}</div>
                     <div className="text-gray-600">{quiz.subject}</div>
                     <div className="text-gray-900">{quiz.score}%</div>
@@ -262,7 +262,7 @@ export default function ClassDetailsPage() {
             <button
               type="button"
               onClick={() => toggleSection("projects")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50"
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
             >
               <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
               <div className="flex items-center gap-2">
@@ -277,22 +277,18 @@ export default function ClassDetailsPage() {
 
             {expandedSections.projects && (
               <div className="overflow-hidden">
-                <div className="bg-green-400 text-white grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium">
+                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium">
                   <div>Project Title</div>
                   <div>Status</div>
                   <div>Submission Date</div>
                   <div>Feedback</div>
                 </div>
                 {projectData.map((project, index) => (
-                  <div key={`${project.title}-${project.status}-${index}`} className="grid grid-cols-4 gap-4 px-4 py-3 border-b border-gray-100 text-sm">
+                  <div key={`${project.title}-${project.status}-${index}`} className="grid grid-cols-4 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
                     <div className="text-gray-900">{project.title}</div>
                     <div>
                       <Badge 
-                        className={
-                          project.status === "Approved" 
-                            ? "bg-green-100 text-green-800"
-                            : "bg-green-100 text-green-800"
-                        }
+                        className="bg-[var(--primary-100)] text-[color:var(--primary-800)]"
                       >
                         {project.status}
                       </Badge>
@@ -312,7 +308,7 @@ export default function ClassDetailsPage() {
             <button
               type="button"
               onClick={() => toggleSection("exams")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50"
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
             >
               <h2 className="text-lg font-semibold text-gray-900">Exams</h2>
               <div className="flex items-center gap-2">
@@ -327,7 +323,7 @@ export default function ClassDetailsPage() {
 
             {expandedSections.exams && (
               <div className="overflow-hidden">
-                <div className="bg-green-400 text-white grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
+                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
                   <div>Exam title</div>
                   <div>Subject</div>
                   <div>Score</div>
@@ -335,7 +331,7 @@ export default function ClassDetailsPage() {
                   <div>Date</div>
                 </div>
                 {examData.map((exam, index) => (
-                  <div key={`${exam.title}-${exam.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-gray-100 text-sm">
+                  <div key={`${exam.title}-${exam.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
                     <div className="text-gray-900">{exam.title}</div>
                     <div className="text-gray-600">{exam.subject}</div>
                     <div className="text-gray-900">{exam.score}%</div>

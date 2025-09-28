@@ -138,7 +138,7 @@ export default function CreateExamPage() {
                     placeholder="Enter exam title"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+                    className="h-14 px-5 rounded-lg text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)] bg-[var(--primary-50)] border border-[color:var(--primary-100)]"
                     required
                   />
                 </div>
@@ -148,7 +148,7 @@ export default function CreateExamPage() {
                     Subject
                   </Label>
                   <Select onValueChange={(value) => handleInputChange("subject", value)}>
-                    <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                       <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
                     <SelectContent>
@@ -175,7 +175,7 @@ export default function CreateExamPage() {
                     placeholder="Enter exam description"
                     value={formData.description}
                     onChange={(e) => handleInputChange("description", e.target.value)}
-                    className="bg-green-50 border-green-100 h-24 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+                    className="h-24 px-5 rounded-lg text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)] bg-[var(--primary-50)] border border-[color:var(--primary-100)]"
                   />
                 </div>
                 
@@ -184,7 +184,7 @@ export default function CreateExamPage() {
                     Exam Type
                   </Label>
                   <Select onValueChange={(value) => handleInputChange("examType", value)}>
-                    <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                       <SelectValue placeholder="Select exam type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -213,7 +213,7 @@ export default function CreateExamPage() {
                       type="date"
                       value={formData.dueDate}
                       onChange={(e) => handleInputChange("dueDate", e.target.value)}
-                      className="bg-green-50 border-green-100 h-14 px-5 pr-12 rounded-lg text-gray-700"
+                      className="h-14 px-5 pr-12 rounded-lg text-[color:var(--primary-800)] bg-[var(--primary-50)] border border-[color:var(--primary-100)]"
                       required
                     />
                     <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
@@ -225,7 +225,7 @@ export default function CreateExamPage() {
                     Time Limit
                   </Label>
                   <Select onValueChange={(value) => handleInputChange("timeLimit", value)}>
-                    <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                       <SelectValue placeholder="Select time limit" />
                     </SelectTrigger>
                     <SelectContent>
@@ -249,14 +249,14 @@ export default function CreateExamPage() {
               {fromFlow ? (
                 // Show selected information from flow
                 <div className="space-y-4">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <div className="p-6 rounded-lg border bg-[var(--primary-50)] border-[color:var(--primary-200)]">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-medium text-gray-900">Selected Students</h3>
                       <Button
                         type="button"
                         variant="outline"
                         onClick={startFlow}
-                        className="text-green-600 border-green-300 hover:bg-green-50"
+                        className="text-[color:var(--primary-600)] border-[color:var(--primary-300)] hover:bg-[var(--primary-50)]"
                       >
                         Change Selection
                       </Button>
@@ -291,7 +291,7 @@ export default function CreateExamPage() {
                       <Button
                         type="button"
                         onClick={startFlow}
-                        className="bg-green-500 hover:bg-green-600 text-white"
+                        className="bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
                       >
                         Select Students
                       </Button>
@@ -309,7 +309,7 @@ export default function CreateExamPage() {
                         onValueChange={(value) => handleInputChange("grade", value)}
                         value={formData.grade}
                       >
-                        <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                        <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                           <SelectValue placeholder="Select grade" />
                         </SelectTrigger>
                         <SelectContent>
@@ -335,7 +335,7 @@ export default function CreateExamPage() {
                         onValueChange={(value) => handleInputChange("section", value)}
                         value={formData.section}
                       >
-                        <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                        <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                           <SelectValue placeholder="Select section" />
                         </SelectTrigger>
                         <SelectContent>
@@ -363,7 +363,7 @@ export default function CreateExamPage() {
               </Button>
               <Button
                 type="submit"
-                className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white"
+                className="px-8 py-3 bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)]"
               >
                 Create Exam
               </Button>

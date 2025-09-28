@@ -264,7 +264,7 @@ export default function QuizFormPage() {
                 type="button"
                 onClick={handleGenerateQuiz}
                 disabled={loading}
-                className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50"
+                className="px-8 py-2 button-primary rounded-lg disabled:opacity-50 shadow-sm"
               >
                 {loading ? 'Generating...' : 'Confirm'}
               </button>
@@ -283,8 +283,8 @@ export default function QuizFormPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
               <div className="mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-green-600 text-2xl">✓</span>
+                <div className="w-16 h-16 bg-[var(--primary-50)] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-[color:var(--primary-600)] text-2xl">✓</span>
                 </div>
                 <h1 className="text-2xl font-semibold text-gray-900 mb-2">Quiz Generated and Assigned Successfully!</h1>
                 <p className="text-gray-600">Your quiz has been created and assigned to {selectedStudents.length} students.</p>
@@ -301,7 +301,7 @@ export default function QuizFormPage() {
                 <button
                   type="button"
                   onClick={() => router.push('/quizzes/create/grade')}
-                  className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+                  className="px-8 py-2 button-primary rounded-lg shadow-sm"
                 >
                   Create Another Quiz
                 </button>
@@ -357,7 +357,7 @@ export default function QuizFormPage() {
                   placeholder="Fractions, Photosynthesis"
                   value={formData.topic}
                   onChange={(e) => handleInputChange('topic', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
               <div className="space-y-2">
@@ -367,7 +367,7 @@ export default function QuizFormPage() {
                   placeholder="Easy / Medium / Hard"
                   value={formData.difficulty}
                   onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
             </div>
@@ -381,7 +381,7 @@ export default function QuizFormPage() {
                   placeholder="Math, Science, EVS, English"
                   value={formData.subject}
                   onChange={(e) => handleInputChange('subject', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
               <div className="space-y-2">
@@ -391,7 +391,7 @@ export default function QuizFormPage() {
                   placeholder="3 - 10"
                   value={formData.questionCount}
                   onChange={(e) => handleInputChange('questionCount', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
             </div>
@@ -405,7 +405,7 @@ export default function QuizFormPage() {
                   placeholder="e.g., 27 June 2025"
                   value={formData.dueDate}
                   onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
               <div className="space-y-2">
@@ -415,7 +415,7 @@ export default function QuizFormPage() {
                   placeholder="5, 10, 15 minutes"
                   value={formData.timeLimit}
                   onChange={(e) => handleInputChange('timeLimit', e.target.value)}
-                  className="h-10 w-full border-green-200 focus:border-green-500 focus:ring-green-500 bg-green-50 text-gray-700"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function QuizFormPage() {
               </button>
               <button
                 type="submit"
-                className="px-8 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+                className="px-8 py-2 button-primary rounded-lg shadow-sm"
               >
                 Assign quiz
               </button>

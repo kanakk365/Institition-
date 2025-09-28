@@ -77,7 +77,7 @@ export default function SuperAdminDashboard() {
           {/* Loading State */}
           {loading && (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
             </div>
           )}
 
@@ -110,8 +110,8 @@ export default function SuperAdminDashboard() {
                 <Card className="bg-white border-0 shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-green-100 rounded-lg">
-                        <ClipboardList className="h-6 w-6 text-green-600" />
+                      <div className="p-3 bg-[var(--primary-50)] rounded-lg">
+                        <ClipboardList className="h-6 w-6 text-[color:var(--primary-600)]" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold text-gray-900">{dashboardData.totalQuizzes}</p>
@@ -124,8 +124,8 @@ export default function SuperAdminDashboard() {
                 <Card className="bg-white border-0 shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-green-100 rounded-lg">
-                        <FolderOpen className="h-6 w-6 text-green-600" />
+                      <div className="p-3 bg-[var(--primary-50)] rounded-lg">
+                        <FolderOpen className="h-6 w-6 text-[color:var(--primary-600)]" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold text-gray-900">{dashboardData.projectsInProgress}</p>

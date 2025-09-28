@@ -147,7 +147,7 @@ export default function AssignQuizPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex items-center text-green-500 hover:text-green-600 mb-4 font-medium"
+            className="flex items-center mb-4 font-medium text-[color:var(--primary-600)] hover:text-[color:var(--primary-700)]"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -168,7 +168,7 @@ export default function AssignQuizPage() {
                   onClick={() => setSelectedQuiz(quiz.id)}
                   className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     selectedQuiz === quiz.id 
-                      ? 'border-green-500 bg-green-50' 
+                      ? 'border-[color:var(--primary-400)] bg-[var(--primary-50)]' 
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -195,7 +195,7 @@ export default function AssignQuizPage() {
                     setSelectedSection('');
                     setStudents([]);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[color:var(--primary-400)] focus:border-[color:var(--primary-400)]"
                 >
                   <option value="">Select Grade</option>
                   {grades.map((grade) => (
@@ -213,7 +213,7 @@ export default function AssignQuizPage() {
                   value={selectedSection}
                   onChange={(e) => setSelectedSection(e.target.value)}
                   disabled={!selectedGrade}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[color:var(--primary-400)] focus:border-[color:var(--primary-400)] disabled:bg-gray-100"
                 >
                   <option value="">Select Section</option>
                   {selectedGradeData?.sections.map((section) => (
@@ -249,7 +249,7 @@ export default function AssignQuizPage() {
                     onClick={() => handleStudentSelection(student.id)}
                     className={`p-3 border rounded-lg cursor-pointer transition-all ${
                       selectedStudents.includes(student.id) || assignToAll
-                        ? 'border-green-500 bg-green-50' 
+                        ? 'border-[color:var(--primary-400)] bg-[var(--primary-50)]' 
                         : 'border-gray-200 hover:border-gray-300'
                     } ${assignToAll ? 'opacity-75' : ''}`}
                   >
@@ -278,7 +278,7 @@ export default function AssignQuizPage() {
               type="datetime-local"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[color:var(--primary-400)] focus:border-[color:var(--primary-400)]"
             />
           </div>
 
@@ -295,7 +295,7 @@ export default function AssignQuizPage() {
               type="button"
               onClick={handleAssignQuiz}
               disabled={loading || !selectedQuiz || !selectedGrade || !selectedSection || (!assignToAll && selectedStudents.length === 0)}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2 rounded-lg transition-colors bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] hover:bg-[color:var(--primary-600)] disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {loading ? 'Assigning...' : 'Assign Quiz'}
             </button>

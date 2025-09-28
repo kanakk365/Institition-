@@ -275,12 +275,12 @@ export default function CreateExamAssignPage() {
           <p className="text-gray-600">Create AI-generated exams with customizable question types and difficulty</p>
           
           {gradeAndSection && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <div className="mt-4 p-4 bg-[var(--primary-50)] rounded-lg">
               <div className="flex items-center gap-4 text-sm">
-                <span className="font-medium text-blue-800">Selected:</span>
-                <span className="text-blue-700">{gradeAndSection.standardName} - {gradeAndSection.sectionName}</span>
-                <span className="text-blue-700">•</span>
-                <span className="text-blue-700">{selectedStudents.length} students selected</span>
+                <span className="font-medium text-[color:var(--primary-800)]">Selected:</span>
+                <span className="text-[color:var(--primary-700)]">{gradeAndSection.standardName} - {gradeAndSection.sectionName}</span>
+                <span className="text-[color:var(--primary-700)]">•</span>
+                <span className="text-[color:var(--primary-700)]">{selectedStudents.length} students selected</span>
               </div>
             </div>
           )}
@@ -305,7 +305,7 @@ export default function CreateExamAssignPage() {
                   placeholder="e.g., Physics, Mathematics, Chemistry"
                   value={formData.subject}
                   onChange={(e) => handleInputChange('subject', e.target.value)}
-                  className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+                  className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -319,7 +319,7 @@ export default function CreateExamAssignPage() {
                   placeholder="e.g., Wave Motion and Sound, Algebra, Organic Chemistry"
                   value={formData.topic}
                   onChange={(e) => handleInputChange('topic', e.target.value)}
-                  className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+                  className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -332,7 +332,7 @@ export default function CreateExamAssignPage() {
                 </Label>
                 <div className="relative">
                   <Select value={formData.examType} onValueChange={(value) => handleInputChange('examType', value)}>
-                    <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectTrigger className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
@@ -351,7 +351,7 @@ export default function CreateExamAssignPage() {
                 </Label>
                 <div className="relative">
                   <Select value={formData.level} onValueChange={(value) => handleInputChange('level', value)}>
-                    <SelectTrigger className="bg-green-50 border-green-100 h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectTrigger className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
@@ -381,14 +381,14 @@ export default function CreateExamAssignPage() {
                       onClick={() => handleQuestionTypeChange(option.value)}
                       className={`p-6 rounded-xl border-2 text-left transition-all duration-200 ${
                         formData.questionType === option.value
-                          ? 'border-green-500 bg-green-50 shadow-md'
-                          : 'border-gray-200 bg-white hover:border-green-300 hover:bg-green-25'
+                          ? 'border-[color:var(--primary-500)] bg-[var(--primary-50)] shadow-md'
+                          : 'border-gray-200 bg-white hover:border-[color:var(--primary-300)] hover:bg-[var(--primary-50)]'
                       }`}
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div className={`w-4 h-4 rounded-full border-2 ${
                           formData.questionType === option.value
-                            ? 'border-green-500 bg-green-500'
+                            ? 'border-[color:var(--primary-500)] bg-[color:var(--primary-500)]'
                             : 'border-gray-300'
                         }`}>
                           {formData.questionType === option.value && (
@@ -404,7 +404,7 @@ export default function CreateExamAssignPage() {
               </div>
 
               {/* Question Configuration */}
-              <div className="bg-green-25 border border-green-100 rounded-lg p-6">
+              <div className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] rounded-lg p-6">
                 <h3 className="text-lg font-medium text-gray-800 mb-4">Question Configuration</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -470,9 +470,9 @@ export default function CreateExamAssignPage() {
                 </div>
 
                 {/* Summary */}
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">Exam Summary</h4>
-                  <div className="text-sm text-blue-700">
+                <div className="mt-6 p-4 bg-[var(--primary-50)] rounded-lg">
+                  <h4 className="font-medium text-[color:var(--primary-800)] mb-2">Exam Summary</h4>
+                  <div className="text-sm text-[color:var(--primary-700)]">
                     <p>
                       Total Questions: {' '}
                       {(formData.questionConfig.config.long?.count || 0) + (formData.questionConfig.config.short?.count || 0)}
@@ -498,7 +498,7 @@ export default function CreateExamAssignPage() {
               </Button>
               <Button 
                 type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white px-10 py-3 h-12 rounded-lg font-medium"
+                className="bg-[color:var(--primary-500)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)] px-10 py-3 h-12 rounded-lg font-medium"
               >
                 Continue to Confirmation
               </Button>

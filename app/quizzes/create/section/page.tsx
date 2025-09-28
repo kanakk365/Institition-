@@ -83,7 +83,7 @@ export default function QuizSectionSelection() {
             <>
               <h1 className="text-2xl font-semibold text-gray-900">Loading...</h1>
               <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)]"></div>
               </div>
             </>
           ) : !selectedStandard ? (
@@ -113,14 +113,14 @@ export default function QuizSectionSelection() {
                       type="button"
                       className={`bg-cover bg-center rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 w-full h-32 min-h-[8rem] relative overflow-hidden ${
                         selectedSection?.id === section.id
-                          ? 'border-4 border-green-500 shadow-xl scale-105'
+                          ? 'border-4 border-[color:var(--primary-500)] shadow-xl scale-105'
                           : 'border-0 hover:shadow-lg'
                       }`}
                       style={{ backgroundImage: 'url(/section-selection.png)' }}
                       onClick={() => handleSectionSelect(section)}
                     >
                       {selectedSection?.id === section.id && (
-                        <div className="absolute inset-0 bg-green-500/20 rounded-xl"></div>
+                        <div className="absolute inset-0 rounded-xl bg-[color:var(--primary-500)] bg-opacity-20"></div>
                       )}
                       <div className="relative z-10 h-full flex items-center justify-center">
                         <h2 className="text-xl font-bold text-white text-center drop-shadow-lg">

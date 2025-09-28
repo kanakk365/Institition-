@@ -166,7 +166,7 @@ export default function StudentsSelectionPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)] mx-auto mb-4"></div>
             <p className="text-gray-600 text-lg">Loading students...</p>
           </div>
         </div>
@@ -197,15 +197,15 @@ export default function StudentsSelectionPage() {
   return (
     <div className="pt-8 px-6 lg:px-16">
       <div className="max-w-[1100px] mx-auto">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+  <div className="bg-white rounded-2xl border border-[color:var(--primary-100)] shadow-sm p-8">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Students</h1>
+              <h1 className="text-2xl font-semibold text-[color:var(--primary-800)]">Students</h1>
             </div>
 
             <div className="flex items-center gap-4">
               <Button
-                className="rounded-md px-4 py-2 bg-green-400 hover:bg-green-500 text-white shadow text-sm font-medium"
+                className="rounded-md px-4 py-2 button-primary shadow text-sm font-medium"
                 onClick={handleAssignToAll}
               >
                 + Assign to all
@@ -217,7 +217,7 @@ export default function StudentsSelectionPage() {
                   placeholder="Search users here"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 w-80 h-10 rounded-full bg-gray-100 border-0"
+                  className="pl-12 pr-4 w-80 h-10 rounded-full bg-[var(--primary-50)] border border-[color:var(--primary-200)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)] focus-visible:ring-[color:var(--primary-300)] focus-visible:border-[color:var(--primary-400)]"
                 />
               </div>
             </div>
@@ -226,29 +226,29 @@ export default function StudentsSelectionPage() {
           <div className="overflow-hidden rounded-lg">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="text-gray-700 font-medium py-4 pl-6">Name</TableHead>
-                  <TableHead className="text-gray-700 font-medium">Class</TableHead>
-                  <TableHead className="text-gray-700 font-medium">Email ID</TableHead>
-                  <TableHead className="text-gray-700 font-medium">Phone Number</TableHead>
-                  <TableHead className="text-gray-700 font-medium">Status</TableHead>
-                  <TableHead className="text-gray-700 font-medium pr-6">Action</TableHead>
+                <TableRow className="bg-[var(--primary-50)]">
+                  <TableHead className="text-[color:var(--primary-800)] font-medium py-4 pl-6">Name</TableHead>
+                  <TableHead className="text-[color:var(--primary-800)] font-medium">Class</TableHead>
+                  <TableHead className="text-[color:var(--primary-800)] font-medium">Email ID</TableHead>
+                  <TableHead className="text-[color:var(--primary-800)] font-medium">Phone Number</TableHead>
+                  <TableHead className="text-[color:var(--primary-800)] font-medium">Status</TableHead>
+                  <TableHead className="text-[color:var(--primary-800)] font-medium pr-6">Action</TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {filteredStudents.map((student) => (
-                  <TableRow key={student.id} className="border-b last:border-b-0">
-                    <TableCell className="py-6 pl-6 text-gray-900">{student.firstName} {student.lastName}</TableCell>
-                    <TableCell className="text-gray-600">{student.standard.name}</TableCell>
-                    <TableCell className="text-gray-600">{student.email}</TableCell>
-                    <TableCell className="text-gray-600">{student.phone}</TableCell>
-                    <TableCell className="text-gray-600">{student.isActive ? 'Active' : 'Inactive'}</TableCell>
+                  <TableRow key={student.id} className="border-b border-[color:var(--primary-100)] last:border-b-0 hover:bg-[color:var(--primary-100)] transition-colors">
+                    <TableCell className="py-6 pl-6 text-[color:var(--primary-800)]">{student.firstName} {student.lastName}</TableCell>
+                    <TableCell className="text-[color:var(--primary-700)]">{student.standard.name}</TableCell>
+                    <TableCell className="text-[color:var(--primary-700)]">{student.email}</TableCell>
+                    <TableCell className="text-[color:var(--primary-700)]">{student.phone}</TableCell>
+                    <TableCell className="text-[color:var(--primary-700)]">{student.isActive ? 'Active' : 'Inactive'}</TableCell>
                     <TableCell className="pr-6">
                       <div className="flex justify-end">
                         <button
                           onClick={() => handleAssignToStudent(student.id)}
-                          className={`px-3 py-2 rounded-md text-sm font-medium shadow-sm focus:outline-none transition ${selectedStudents.includes(student.id) ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-green-400 text-white hover:bg-green-500'}`}
+                          className={`px-3 py-2 rounded-md text-sm font-medium shadow-sm focus:outline-none transition ${selectedStudents.includes(student.id) ? 'bg-[color:var(--primary-600)] text-[color:var(--primary-foreground)] hover:bg-[color:var(--primary-700)]' : 'bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] hover:bg-[color:var(--primary-600)]'}`}
                         >
                           {selectedStudents.includes(student.id) ? 'Selected' : 'Assign'}
                         </button>
@@ -260,11 +260,11 @@ export default function StudentsSelectionPage() {
             </Table>
           </div>
 
-          <div className="flex items-center justify-between text-sm text-gray-600 mt-6">
+          <div className="flex items-center justify-between text-sm text-[color:var(--primary-700)] mt-6">
             <div>Showing 1–09 of {students.length}</div>
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">←</button>
-              <button className="w-8 h-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">→</button>
+              <button className="w-8 h-8 rounded-md border border-[color:var(--primary-200)] bg-white text-[color:var(--primary-700)] hover:bg-[color:var(--primary-50)]">←</button>
+              <button className="w-8 h-8 rounded-md border border-[color:var(--primary-200)] bg-white text-[color:var(--primary-700)] hover:bg-[color:var(--primary-50)]">→</button>
             </div>
           </div>
         </div>
