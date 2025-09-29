@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, ArrowLeft } from "lucide-react"
+import { SUBJECT_OPTIONS } from "@/lib/subjects"
+import { ArrowLeft, Calendar } from "lucide-react"
 
 interface Standard {
   id: number
@@ -147,19 +149,19 @@ export default function CreateExamPage() {
                   <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
                     Subject
                   </Label>
-                  <Select onValueChange={(value) => handleInputChange("subject", value)}>
+                  <Select
+                    value={formData.subject || undefined}
+                    onValueChange={(value) => handleInputChange("subject", value)}
+                  >
                     <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
                       <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="mathematics">Mathematics</SelectItem>
-                      <SelectItem value="science">Science</SelectItem>
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="history">History</SelectItem>
-                      <SelectItem value="geography">Geography</SelectItem>
-                      <SelectItem value="physics">Physics</SelectItem>
-                      <SelectItem value="chemistry">Chemistry</SelectItem>
-                      <SelectItem value="biology">Biology</SelectItem>
+                      {SUBJECT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+import { SUBJECT_OPTIONS } from "@/lib/subjects"
 
 interface ExamData {
   examDetails: {
@@ -169,11 +170,21 @@ export default function CustomExamFormPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-              <Input 
-                placeholder="e.g., Mathematics" 
-                value={data.examDetails.subject} 
-                onChange={(e) => handleInputChange('subject', e.target.value)} 
-              />
+              <Select
+                value={data.examDetails.subject || undefined}
+                onValueChange={(value) => handleInputChange('subject', value)}
+              >
+                <SelectTrigger className="w-full bg-white border border-gray-300 h-10">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                  {SUBJECT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="cursor-pointer hover:bg-gray-100 px-3 py-2">
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>

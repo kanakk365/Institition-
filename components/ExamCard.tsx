@@ -1,6 +1,15 @@
 import React from "react";
 
 const subjectColors: Record<string, string> = {
+  Mathematics: "#4A90E2",
+  Physics: "#8E44AD",
+  Chemistry: "#27AE60",
+  Biology: "#16A085",
+  Zoology: "#2ECC71",
+  History: "#E67E22",
+  Economics: "#F1C40F",
+  Civics: "#3498DB",
+  Geography: "#1ABC9C",
   Maths: "#4A90E2",
   Math: "#4A90E2",
   Science: "#8F5AFF",

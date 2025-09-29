@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ExamView } from "@/components/exam-view"
 import api from "@/lib/api"
+import { SUBJECT_OPTIONS } from "@/lib/subjects"
 import { useRouter } from "next/navigation"
 
 interface ExamFormData {
@@ -300,14 +301,21 @@ export default function CreateExamAssignPage() {
                 <Label htmlFor="subject" className="text-sm font-medium text-gray-700">
                   Subject *
                 </Label>
-                <Input
-                  id="subject"
-                  placeholder="e.g., Physics, Mathematics, Chemistry"
-                  value={formData.subject}
-                  onChange={(e) => handleInputChange('subject', e.target.value)}
-                  className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
-                  required
-                />
+                <Select
+                  value={formData.subject || undefined}
+                  onValueChange={(value) => handleInputChange('subject', value)}
+                >
+                  <SelectTrigger id="subject" className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                    <SelectValue placeholder="Select subject" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
+                    {SUBJECT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-4">

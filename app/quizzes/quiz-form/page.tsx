@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/ui/sidebar';
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SUBJECT_OPTIONS } from "@/lib/subjects"
 import api from '@/lib/axios';
 
 interface SelectedStudent {
@@ -376,13 +378,21 @@ export default function QuizFormPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
-                <Input
-                  id="subject"
-                  placeholder="Math, Science, EVS, English"
-                  value={formData.subject}
-                  onChange={(e) => handleInputChange('subject', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
-                />
+                <Select
+                  value={formData.subject || undefined}
+                  onValueChange={(value) => handleInputChange('subject', value)}
+                >
+                  <SelectTrigger id="subject" className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]">
+                    <SelectValue placeholder="Select subject" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                    {SUBJECT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="cursor-pointer hover:bg-gray-100 px-3 py-2">
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label htmlFor="questions" className="block text-sm font-medium text-gray-700">No. of Questions</label>

@@ -1,143 +1,165 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import api from "@/lib/api"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-interface QuizData {
-  quizDetails: {
-    title: string
-    subject: string
-    topic: string
-    timeLimitMinutes: number
-    instructions: string
-    difficulty: string
-  }
-  classSection: {
-    standardId: string
-    sectionId: string
-  }
-  questions: Question[]
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { SUBJECT_OPTIONS } from "@/lib/subjects";
+
+interface QuestionOption {
+  id: string;
+  optionText: string;
+  isCorrect: boolean;
 }
 
 interface Question {
-  questionText: string
-  marks: number
-  options: { optionText: string; isCorrect: boolean }[]
+  id: string;
+  questionText: string;
+  marks: number;
+  options: QuestionOption[];
 }
 
+interface QuizData {
+  quizDetails: {
+    title: string;
+    subject: string;
+    topic: string;
+    timeLimitMinutes: number;
+    instructions: string;
+    difficulty: string;
+  };
+  classSection: {
+    standardId: string;
+    sectionId: string;
+  };
+  questions: Question[];
+}
+
+const createEmptyOption = (): QuestionOption => ({
+  id: crypto.randomUUID(),
+  optionText: "",
+  isCorrect: false,
+});
+
+const createEmptyQuestion = (): Question => ({
+  id: crypto.randomUUID(),
+  questionText: "",
+  marks: 1,
+  options: [createEmptyOption(), createEmptyOption(), createEmptyOption(), createEmptyOption()],
+});
+
 export default function CustomQuizFormPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [data, setData] = useState<QuizData>({
-    quizDetails: { title: '', subject: '', topic: '', timeLimitMinutes: 30, instructions: '', difficulty: 'MEDIUM' },
-    classSection: { standardId: '', sectionId: '' },
+    quizDetails: {
+      title: "",
+      subject: "",
+      topic: "",
+      timeLimitMinutes: 30,
+      instructions: "",
+      difficulty: "MEDIUM",
+    },
+    classSection: { standardId: "", sectionId: "" },
     questions: [],
-  })
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState('')
-  const [error, setError] = useState('')
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('customQuizGradeAndSection')
-    const std = sessionStorage.getItem('customQuizSelectedStandard')
+    const stored = sessionStorage.getItem("customQuizGradeAndSection");
+    const std = sessionStorage.getItem("customQuizSelectedStandard");
     if (stored && std) {
-      const parsed = JSON.parse(stored)
-      const standard = JSON.parse(std)
-      setData(prev => ({
-        ...prev, 
-        classSection: { standardId: standard.id, sectionId: parsed.section.id }
-      }))
+      const parsed = JSON.parse(stored);
+      const standard = JSON.parse(std);
+      setData((prev) => ({
+        ...prev,
+        classSection: { standardId: standard.id, sectionId: parsed.section.id },
+      }));
     }
-  }, [])
+  }, []);
 
-  const handleInputChange = (field: keyof QuizData['quizDetails'], value: string | number) => {
-    setData(prev => ({
+  const handleInputChange = (field: keyof QuizData["quizDetails"], value: string | number) => {
+    setData((prev) => ({
       ...prev,
-      quizDetails: { ...prev.quizDetails, [field]: value }
-    }))
-  }
+      quizDetails: { ...prev.quizDetails, [field]: value },
+    }));
+  };
 
   const addQuestion = () => {
-    const newQuestion: Question = {
-      questionText: '',
-      marks: 1,
-      options: [
-        { optionText: '', isCorrect: false },
-        { optionText: '', isCorrect: false },
-        { optionText: '', isCorrect: false },
-        { optionText: '', isCorrect: false }
-      ]
-    }
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      questions: [...prev.questions, newQuestion]
-    }))
-  }
+      questions: [...prev.questions, createEmptyQuestion()],
+    }));
+  };
 
-  const removeQuestion = (index: number) => {
-    setData(prev => ({
+  const removeQuestion = (id: string) => {
+    setData((prev) => ({
       ...prev,
-      questions: prev.questions.filter((_, i) => i !== index)
-    }))
-  }
+      questions: prev.questions.filter((question) => question.id !== id),
+    }));
+  };
 
-  const updateQuestion = (index: number, field: keyof Question, value: string | number | Question['options']) => {
-    setData(prev => ({
+  const updateQuestion = (id: string, field: keyof Question, value: string | number | QuestionOption[]) => {
+    setData((prev) => ({
       ...prev,
-      questions: prev.questions.map((q, i) => 
-        i === index ? { ...q, [field]: value } : q
-      )
-    }))
-  }
+      questions: prev.questions.map((question) => (question.id === id ? { ...question, [field]: value } : question)),
+    }));
+  };
 
-  const updateOption = (questionIndex: number, optionIndex: number, field: 'optionText' | 'isCorrect', value: string | boolean) => {
-    setData(prev => ({
+  const updateOption = (questionId: string, optionId: string, field: keyof QuestionOption, value: string | boolean) => {
+    setData((prev) => ({
       ...prev,
-      questions: prev.questions.map((q, i) => 
-        i === questionIndex ? {
-          ...q,
-          options: q.options?.map((opt, j) => 
-            j === optionIndex ? { ...opt, [field]: value } : opt
-          )
-        } : q
-      )
-    }))
-  }
+      questions: prev.questions.map((question) =>
+        question.id === questionId
+          ? {
+              ...question,
+              options: question.options.map((option) =>
+                option.id === optionId ? { ...option, [field]: value } : option,
+              ),
+            }
+          : question,
+      ),
+    }));
+  };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    setError("");
+    setLoading(true);
+
     if (data.questions.length === 0) {
-      setError('Please add at least one question')
-      return
+      setError("Please add at least one question");
+      setLoading(false);
+      return;
     }
 
-    // Validate questions
-    for (let i = 0; i < data.questions.length; i++) {
-      const q = data.questions[i]
-      if (!q.questionText.trim()) {
-        setError(`Question ${i + 1} text is required`)
-        return
+    for (let i = 0; i < data.questions.length; i += 1) {
+      const question = data.questions[i];
+      if (!question.questionText.trim()) {
+        setError(`Question ${i + 1} text is required`);
+        setLoading(false);
+        return;
       }
-      if (!q.options.some(opt => opt.isCorrect)) {
-        setError(`Question ${i + 1} must have at least one correct answer`)
-        return
+      if (!question.options.some((option) => option.isCorrect)) {
+        setError(`Question ${i + 1} must have at least one correct answer`);
+        setLoading(false);
+        return;
       }
-      if (q.options.some(opt => !opt.optionText.trim())) {
-        setError(`Question ${i + 1} has empty options`)
-        return
+      if (question.options.some((option) => !option.optionText.trim())) {
+        setError(`Question ${i + 1} has empty options`);
+        setLoading(false);
+        return;
       }
     }
 
-    // Store quiz data for confirmation page to handle API calls
-    sessionStorage.setItem('quizFormData', JSON.stringify(data))
-    
-    // Navigate directly to confirmation page without API call
-    router.push('/custom-quiz/confirmation')
-  }
+    sessionStorage.setItem("quizFormData", JSON.stringify(data));
+
+    setLoading(false);
+    router.push("/custom-quiz/confirmation");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -151,46 +173,59 @@ export default function CustomQuizFormPage() {
           
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quiz Title</label>
-              <Input 
-                placeholder="e.g., Mathematics Quiz - Algebra" 
-                value={data.quizDetails.title} 
-                onChange={(e) => handleInputChange('title', e.target.value)} 
+              <label htmlFor="quiz-title" className="block text-sm font-medium text-gray-700 mb-2">Quiz Title</label>
+              <Input
+                id="quiz-title"
+                placeholder="e.g., Mathematics Quiz - Algebra"
+                value={data.quizDetails.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-              <Input 
-                placeholder="e.g., Mathematics" 
-                value={data.quizDetails.subject} 
-                onChange={(e) => handleInputChange('subject', e.target.value)} 
+              <label htmlFor="quiz-subject" className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+              <Select
+                value={data.quizDetails.subject || undefined}
+                onValueChange={(value) => handleInputChange("subject", value)}
+              >
+                <SelectTrigger id="quiz-subject" className="w-full bg-white border border-gray-300 h-10">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                  {SUBJECT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="cursor-pointer hover:bg-gray-100 px-3 py-2">
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label htmlFor="quiz-topic" className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+              <Input
+                id="quiz-topic"
+                placeholder="e.g., Algebra"
+                value={data.quizDetails.topic}
+                onChange={(e) => handleInputChange("topic", e.target.value)}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
-              <Input 
-                placeholder="e.g., Algebra" 
-                value={data.quizDetails.topic} 
-                onChange={(e) => handleInputChange('topic', e.target.value)} 
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Time Limit (minutes)</label>
-              <Input 
+              <label htmlFor="quiz-time-limit" className="block text-sm font-medium text-gray-700 mb-2">Time Limit (minutes)</label>
+              <Input
+                id="quiz-time-limit"
                 type="number"
-                placeholder="30" 
-                value={data.quizDetails.timeLimitMinutes} 
-                onChange={(e) => handleInputChange('timeLimitMinutes', parseInt(e.target.value) || 0)} 
+                placeholder="30"
+                value={data.quizDetails.timeLimitMinutes}
+                onChange={(e) => handleInputChange("timeLimitMinutes", parseInt(e.target.value, 10) || 0)}
               />
             </div>
 
             <div className="relative z-10">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-              <Select value={data.quizDetails.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
-                <SelectTrigger className="w-full bg-white border border-gray-300 h-10">
+              <label htmlFor="quiz-difficulty" className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+              <Select value={data.quizDetails.difficulty} onValueChange={(value) => handleInputChange("difficulty", value)}>
+                <SelectTrigger id="quiz-difficulty" className="w-full bg-white border border-gray-300 h-10">
                   <SelectValue placeholder="Select difficulty" />
                 </SelectTrigger>
                 <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
@@ -202,11 +237,12 @@ export default function CustomQuizFormPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Instructions</label>
-              <Textarea 
-                placeholder="Please read all questions carefully..." 
-                value={data.quizDetails.instructions} 
-                onChange={(e) => handleInputChange('instructions', e.target.value)} 
+              <label htmlFor="quiz-instructions" className="block text-sm font-medium text-gray-700 mb-2">Instructions</label>
+              <Textarea
+                id="quiz-instructions"
+                placeholder="Please read all questions carefully..."
+                value={data.quizDetails.instructions}
+                onChange={(e) => handleInputChange("instructions", e.target.value)}
               />
             </div>
 
@@ -225,68 +261,79 @@ export default function CustomQuizFormPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {data.questions.map((question, index) => (
-                    <div key={`question-${index}`} className="border rounded-lg p-4 bg-gray-50 relative overflow-visible">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-medium">Question {index + 1}</h4>
-                        <Button 
-                          type="button" 
-                          onClick={() => removeQuestion(index)} 
-                          variant="outline" 
-                          size="sm"
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Remove
-                        </Button>
-                      </div>
+                  {data.questions.map((question, index) => {
+                    const questionTextId = `question-${question.id}-text`;
+                    const questionMarksId = `question-${question.id}-marks`;
 
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-                          <Textarea
-                            placeholder="Enter your question here..."
-                            value={question.questionText}
-                            onChange={(e) => updateQuestion(index, 'questionText', e.target.value)}
-                          />
+                    return (
+                      <div key={question.id} className="border rounded-lg p-4 bg-gray-50 relative overflow-visible">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-medium">Question {index + 1}</h4>
+                          <Button
+                            type="button"
+                            onClick={() => removeQuestion(question.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Marks</label>
-                          <Input
-                            type="number"
-                            placeholder="1"
-                            value={question.marks}
-                            onChange={(e) => updateQuestion(index, 'marks', parseInt(e.target.value) || 1)}
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Options</label>
-                          <div className="space-y-2">
-                            {question.options.map((option, optIndex) => (
-                              <div key={`option-${index}-${optIndex}`} className="flex items-center gap-3">
-                                <Checkbox
-                                  checked={option.isCorrect}
-                                  onCheckedChange={(checked) => 
-                                    updateOption(index, optIndex, 'isCorrect', !!checked)
-                                  }
-                                />
-                                <Input
-                                  placeholder={`Option ${optIndex + 1}`}
-                                  value={option.optionText}
-                                  onChange={(e) => 
-                                    updateOption(index, optIndex, 'optionText', e.target.value)
-                                  }
-                                  className="flex-1"
-                                />
-                              </div>
-                            ))}
+                        <div className="space-y-4">
+                          <div>
+                            <label htmlFor={questionTextId} className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
+                            <Textarea
+                              id={questionTextId}
+                              placeholder="Enter your question here..."
+                              value={question.questionText}
+                              onChange={(e) => updateQuestion(question.id, "questionText", e.target.value)}
+                            />
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Check the correct answer(s)</p>
+
+                          <div>
+                            <label htmlFor={questionMarksId} className="block text-sm font-medium text-gray-700 mb-2">Marks</label>
+                            <Input
+                              id={questionMarksId}
+                              type="number"
+                              placeholder="1"
+                              value={question.marks}
+                              onChange={(e) => updateQuestion(question.id, "marks", parseInt(e.target.value, 10) || 1)}
+                            />
+                          </div>
+
+                          <fieldset>
+                            <legend className="block text-sm font-medium text-gray-700 mb-2">Options</legend>
+                            <div className="space-y-2">
+                              {question.options.map((option, optIndex) => {
+                                const optionCheckboxId = `question-${question.id}-option-${option.id}-correct`;
+                                const optionInputId = `question-${question.id}-option-${option.id}`;
+
+                                return (
+                                  <div key={option.id} className="flex items-center gap-3">
+                                    <Checkbox
+                                      id={optionCheckboxId}
+                                      checked={option.isCorrect}
+                                      onCheckedChange={(checked) => updateOption(question.id, option.id, "isCorrect", !!checked)}
+                                      aria-labelledby={optionInputId}
+                                    />
+                                    <Input
+                                      id={optionInputId}
+                                      placeholder={`Option ${optIndex + 1}`}
+                                      value={option.optionText}
+                                      onChange={(e) => updateOption(question.id, option.id, "optionText", e.target.value)}
+                                      className="flex-1"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">Check the correct answer(s)</p>
+                          </fieldset>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -294,19 +341,14 @@ export default function CustomQuizFormPage() {
             <div className="flex items-center gap-4 pt-6">
               <Button onClick={() => router.back()} variant="outline">Cancel</Button>
               <Button 
-                onClick={handleSubmit} 
-                className="bg-green-500 hover:bg-green-600 text-white" 
+                onClick={handleSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white"
                 disabled={loading || !data.quizDetails.title}
               >
-                {loading ? 'Creating...' : 'Create Custom Quiz'}
+                {loading ? "Creating..." : "Create Custom Quiz"}
               </Button>
             </div>
 
-            {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                {success}
-              </div>
-            )}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}

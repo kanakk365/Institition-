@@ -1,20 +1,21 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SUBJECT_OPTIONS } from "@/lib/subjects";
+import { Calendar } from "lucide-react";
 
 interface ExamAssignmentProps {
-  onCancel: () => void
-  onAssign: () => void
+  onCancel: () => void;
+  onAssign: () => void;
 }
 
 export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-8">Assign Exam to Student</h1>
+      <h1 className="mb-8 text-2xl font-semibold">Assign Exam to Student</h1>
 
       <div className="max-w-2xl space-y-6">
         <div className="grid grid-cols-2 gap-6">
@@ -22,10 +23,10 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
             <Label htmlFor="title" className="text-sm font-medium text-gray-700">
               Exam Title
             </Label>
-            <Input 
+            <Input
               id="title"
-              placeholder="Enter Title" 
-              className="bg-[var(--primary-50)] border-[var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+              placeholder="Enter Title"
+              className="h-14 rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 text-gray-700 placeholder:text-gray-400"
             />
           </div>
           <div>
@@ -33,14 +34,15 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
               Subject
             </Label>
             <Select>
-              <SelectTrigger className="bg-[var(--primary-50)] border-[var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
-                <SelectValue placeholder="Math, Science, EVS, English" />
+              <SelectTrigger className="h-14 w-full justify-between rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 text-gray-700">
+                <SelectValue placeholder="Select subject" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="math">Math</SelectItem>
-                <SelectItem value="science">Science</SelectItem>
-                <SelectItem value="evs">EVS</SelectItem>
-                <SelectItem value="english">English</SelectItem>
+                {SUBJECT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -51,10 +53,10 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
             <Label htmlFor="description" className="text-sm font-medium text-gray-700">
               Description / Notes
             </Label>
-            <Input 
+            <Input
               id="description"
-              placeholder="Enter Description" 
-              className="bg-[var(--primary-50)] border-[var(--primary-100)] h-24 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+              placeholder="Enter Description"
+              className="h-24 rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 text-gray-700 placeholder:text-gray-400"
             />
           </div>
           <div>
@@ -62,7 +64,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
               Exam Type
             </Label>
             <Select>
-              <SelectTrigger className="bg-[var(--primary-50)] border-[var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+              <SelectTrigger className="h-14 w-full justify-between rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 text-gray-700">
                 <SelectValue placeholder="Class Test, Unit Test, Term Exam, Practice" />
               </SelectTrigger>
               <SelectContent>
@@ -81,12 +83,12 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
               Due Date
             </Label>
             <div className="relative">
-              <Input 
+              <Input
                 id="dueDate"
-                placeholder="e.g., 27 June 2025" 
-                className="bg-[var(--primary-50)] border-[var(--primary-100)] h-14 px-5 pr-12 rounded-lg text-gray-700 placeholder:text-gray-400"
+                placeholder="e.g., 27 June 2025"
+                className="h-14 rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 pr-12 text-gray-700 placeholder:text-gray-400"
               />
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Calendar className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             </div>
           </div>
           <div>
@@ -94,7 +96,7 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
               Time Limit
             </Label>
             <Select>
-              <SelectTrigger className="bg-[var(--primary-50)] border-[var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+              <SelectTrigger className="h-14 w-full justify-between rounded-lg border-[var(--primary-100)] bg-[var(--primary-50)] px-5 text-gray-700">
                 <SelectValue placeholder="5, 10, 15 minutes" />
               </SelectTrigger>
               <SelectContent>
@@ -112,11 +114,11 @@ export function ExamAssignment({ onCancel, onAssign }: ExamAssignmentProps) {
           <Button variant="outline" onClick={onCancel} className="flex-1 bg-transparent">
             Cancel
           </Button>
-          <Button onClick={onAssign} className="flex-1 button-primary">
+          <Button onClick={onAssign} className="button-primary flex-1">
             Assign quiz
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
