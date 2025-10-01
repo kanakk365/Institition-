@@ -1,25 +1,16 @@
-import axios from 'axios';
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import Cookies from 'js-cookie';
 
-type RequestConfig = {
-  headers?: Record<string, unknown>;
+type ApiErrorResponse = {
+  message?: string;
   [key: string]: unknown;
 };
 
-type ResponseError = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-      [key: string]: unknown;
-    };
-  };
-  config?: {
-    url?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};
+type ResponseError = AxiosError<ApiErrorResponse>;
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -30,13 +21,24 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config: RequestConfig) => {
-    const token = Cookies.get('auth-token');
-    if (token) {
-      if (!config.headers) {
-        config.headers = {};
+  (config: InternalAxiosRequestConfig) => {
+    let token = '';
+
+    const authCookie = Cookies.get('auth');
+    if (authCookie) {
+      try {
+        const parsedAuth = JSON.parse(authCookie) as { token?: string };
+        token = parsedAuth.token ?? '';
+      } catch {
+        token = Cookies.get('auth-token') ?? '';
       }
-      (config.headers as Record<string, unknown>)['Authorization'] = `Bearer ${token}`;
+    } else {
+      token = Cookies.get('auth-token') ?? '';
+    }
+
+    if (token) {
+      config.headers = config.headers ?? ({} as typeof config.headers);
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
@@ -51,7 +53,7 @@ const shouldForceLogout = (error: ResponseError): boolean => {
     return false;
   }
 
-  const message = String((error.response?.data?.message ?? '')).toLowerCase();
+  const message = String(error.response?.data?.message ?? '').toLowerCase();
   const url = error.config?.url ?? '';
 
   const criticalMessageKeywords = ['token', 'expired', 'invalid', 'authentication', 'session'];
@@ -65,10 +67,12 @@ const shouldForceLogout = (error: ResponseError): boolean => {
 
 // Add response interceptor for error handling
 api.interceptors.response.use(
-  (response: unknown) => response,
+  (response: AxiosResponse) => response,
   (error: ResponseError) => {
     if (shouldForceLogout(error)) {
+      Cookies.remove('auth');
       Cookies.remove('auth-token');
+      Cookies.remove('institution-data');
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
       }

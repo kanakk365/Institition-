@@ -62,7 +62,7 @@ export default function HistorySlider({
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X size={20} />
+            <X width={20} height={20} />
           </button>
         </div>
 
@@ -103,7 +103,7 @@ export default function HistorySlider({
                   onClick={onSearchClose}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                 >
-                  <X size={16} />
+                  <X width={16} height={16} />
                 </button>
               </div>
               {searchQuery && (

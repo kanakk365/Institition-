@@ -1,28 +1,19 @@
-import axios from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import Cookies from "js-cookie";
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://35.154.108.96:3000/api/v1";
 
-type RequestConfig = {
-  headers?: Record<string, unknown>;
+type ApiErrorResponse = {
+  message?: string;
   [key: string]: unknown;
 };
 
-type ResponseError = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-      [key: string]: unknown;
-    };
-  };
-  config?: {
-    url?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};
+type ResponseError = AxiosError<ApiErrorResponse>;
 
 // Create axios instance
 const api = axios.create({
@@ -34,7 +25,7 @@ const api = axios.create({
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config: RequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     // Try auth cookie first (main format), then fallback to auth-token
     let token = "";
 
@@ -53,11 +44,9 @@ api.interceptors.request.use(
 
     if (token) {
       if (!config.headers) {
-        config.headers = {};
+        config.headers = {} as typeof config.headers;
       }
-      (config.headers as Record<string, unknown>)[
-        "Authorization"
-      ] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -72,9 +61,7 @@ const shouldForceLogout = (error: ResponseError): boolean => {
     return false;
   }
 
-  const message = String(
-    (error.response?.data as { message?: string } | undefined)?.message ?? ""
-  ).toLowerCase();
+  const message = String(error.response?.data?.message ?? "").toLowerCase();
   const url = error.config?.url ?? "";
 
   const criticalMessageKeywords = [
@@ -103,7 +90,7 @@ const shouldForceLogout = (error: ResponseError): boolean => {
 
 // Response interceptor to handle auth errors
 api.interceptors.response.use(
-  (response: unknown) => response,
+  (response: AxiosResponse) => response,
   (error: ResponseError) => {
     if (shouldForceLogout(error)) {
       Cookies.remove("auth");
