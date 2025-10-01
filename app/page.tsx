@@ -6,8 +6,9 @@ import { ActivityChart } from "@/components/activity-chart"
 import { Button } from "@/components/ui/button"
 import { RecentStudents } from "@/components/recent-students"
 import { Users, ClipboardList, FolderOpen, TrendingUp } from "lucide-react"
-import { useState, useEffect } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import api from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
 interface DashboardStats {
   totalStudents: number;
@@ -40,6 +41,18 @@ export default function SuperAdminDashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<'GPT' | 'CBSE' | 'CAMBRIDGE'>('GPT');
+  const [isSubmittingMode, setIsSubmittingMode] = useState(false);
+  const { toast } = useToast();
+
+  const modeOptions = useMemo(
+    () => [
+      { label: 'GPT', value: 'GPT' as const },
+      { label: 'CBSE', value: 'CBSE' as const },
+      { label: 'CAMBRIDGE', value: 'CAMBRIDGE' as const },
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -62,16 +75,133 @@ export default function SuperAdminDashboard() {
     fetchDashboardData();
   }, []);
 
+  useEffect(() => {
+    if (!institution) {
+      return;
+    }
+
+    const inferredMode = String(institution.affiliatedBoard || '')
+      .trim()
+      .toUpperCase();
+
+    if (
+      inferredMode === 'GPT' ||
+      inferredMode === 'CBSE' ||
+      inferredMode === 'CAMBRIDGE'
+    ) {
+      setMode(inferredMode);
+    }
+  }, [institution]);
+
+  const handleModeSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmittingMode) {
+      return;
+    }
+
+    try {
+      setIsSubmittingMode(true);
+      const response = await api.post('/institution-admin/settings/switch', {
+        mode,
+      });
+
+      const { data } = response;
+      const success = Boolean(data?.success);
+      const message =
+        (data?.message as string | undefined) ??
+        'Curriculum mode updated successfully';
+
+      if (!success) {
+        throw new Error(message);
+      }
+
+      const updatedMode = String(data?.data?.mode || mode).toUpperCase();
+      if (
+        updatedMode === 'GPT' ||
+        updatedMode === 'CBSE' ||
+        updatedMode === 'CAMBRIDGE'
+      ) {
+        setMode(updatedMode);
+      }
+
+      toast({
+        title: 'Success',
+        description: `Curriculum mode updated to ${updatedMode}.`,
+        duration: 3000,
+      });
+    } catch (submitError) {
+      const fallbackMessage =
+        submitError instanceof Error
+          ? submitError.message
+          : 'Unable to update curriculum mode.';
+
+      toast({
+        title: 'Update failed',
+        description: fallbackMessage,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmittingMode(false);
+    }
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
-            {institution && (
-              <p className="text-gray-600 mt-1">Welcome back, {institution.name}</p>
-            )}
+          <div className="mb-8 space-y-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
+                {institution && (
+                  <p className="text-gray-600 mt-1">Welcome back, {institution.name}</p>
+                )}
+              </div>
+              <form
+                onSubmit={handleModeSubmit}
+                className="w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm lg:w-auto"
+              >
+                <fieldset className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <legend className="text-sm font-medium text-gray-700">
+                    Curriculum mode
+                  </legend>
+                  <div className="flex flex-wrap gap-3">
+                    {modeOptions.map((option) => {
+                      const isSelected = mode === option.value;
+                      return (
+                        <label
+                          key={option.value}
+                          className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                            isSelected
+                              ? 'border-red-500 bg-red-50 text-red-700'
+                              : 'border-gray-200 bg-white text-gray-700 hover:border-red-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="curriculum-mode"
+                            value={option.value}
+                            checked={isSelected}
+                            onChange={() => setMode(option.value)}
+                            className="h-4 w-4 border-gray-300 text-red-600 focus:ring-red-500 accent-red-600"
+                          />
+                          {option.label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={isSubmittingMode}
+                    className="whitespace-nowrap"
+                  >
+                    {isSubmittingMode ? 'Updating…' : 'Update mode'}
+                  </Button>
+                </fieldset>
+              </form>
+            </div>
           </div>
 
           {/* Loading State */}
