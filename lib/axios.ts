@@ -29,7 +29,6 @@ const api = axios.create({
   },
 });
 
-// Add request interceptor to include auth token
 api.interceptors.request.use(
   (config: RequestConfig) => {
     const token = Cookies.get('auth-token');
