@@ -201,7 +201,8 @@ export default function CustomExamConfirmationPage() {
             timeLimit: `${createdExam.timeLimitMinutes} min`,
             topic: createdExam.topic,
             difficulty: 'Custom',
-            questionCount: `${createdExam.questionCount} questions`
+            questionCount: `${createdExam.questionCount} questions`,
+            bloomTaxonomy: 'remember'
           }}
           gradeAndSection={gradeAndSection}
           selectedStudents={selectedStudents.map(student => ({

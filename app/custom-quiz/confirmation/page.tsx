@@ -195,7 +195,8 @@ export default function CustomQuizConfirmationPage() {
             timeLimit: `${createdQuiz.timeLimitMinutes} min`,
             topic: createdQuiz.topic,
             difficulty: createdQuiz.difficulty,
-            questionCount: `${createdQuiz.questionCount} questions`
+            questionCount: `${createdQuiz.questionCount} questions`,
+            bloomTaxonomy: 'remember'
           }}
           gradeAndSection={gradeAndSection}
           selectedStudents={selectedStudents.map(student => ({
