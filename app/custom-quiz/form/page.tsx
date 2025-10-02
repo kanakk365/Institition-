@@ -20,6 +20,7 @@ interface Question {
   id: string;
   questionText: string;
   marks: number;
+  bloomTaxonomy: string;
   options: QuestionOption[];
 }
 
@@ -49,6 +50,7 @@ const createEmptyQuestion = (): Question => ({
   id: crypto.randomUUID(),
   questionText: "",
   marks: 1,
+  bloomTaxonomy: "remember",
   options: [createEmptyOption(), createEmptyOption(), createEmptyOption(), createEmptyOption()],
 });
 
@@ -291,15 +293,37 @@ export default function CustomQuizFormPage() {
                             />
                           </div>
 
-                          <div>
-                            <label htmlFor={questionMarksId} className="block text-sm font-medium text-gray-700 mb-2">Marks</label>
-                            <Input
-                              id={questionMarksId}
-                              type="number"
-                              placeholder="1"
-                              value={question.marks}
-                              onChange={(e) => updateQuestion(question.id, "marks", parseInt(e.target.value, 10) || 1)}
-                            />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative z-10">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Bloom's Taxonomy</label>
+                              <Select
+                                value={question.bloomTaxonomy || "remember"}
+                                onValueChange={(value) => updateQuestion(question.id, "bloomTaxonomy", value)}
+                              >
+                                <SelectTrigger className="w-full bg-white border border-gray-300 h-10">
+                                  <SelectValue placeholder="Select Bloom's Taxonomy level" />
+                                </SelectTrigger>
+                                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                                  <SelectItem value="remember">Remember</SelectItem>
+                                  <SelectItem value="understand">Understand</SelectItem>
+                                  <SelectItem value="apply">Apply</SelectItem>
+                                  <SelectItem value="analyze">Analyze</SelectItem>
+                                  <SelectItem value="evaluate">Evaluate</SelectItem>
+                                  <SelectItem value="create">Create</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <label htmlFor={questionMarksId} className="block text-sm font-medium text-gray-700 mb-2">Marks</label>
+                              <Input
+                                id={questionMarksId}
+                                type="number"
+                                placeholder="1"
+                                value={question.marks}
+                                onChange={(e) => updateQuestion(question.id, "marks", parseInt(e.target.value, 10) || 1)}
+                              />
+                            </div>
                           </div>
 
                           <fieldset>

@@ -29,6 +29,7 @@ interface Question {
   questionText: string
   questionType: 'MCQ' | 'LONG' | 'SHORT'
   marks: number
+  bloomTaxonomy: string
   options?: { optionText: string; isCorrect: boolean }[]
   correctAnswer?: string
 }
@@ -69,6 +70,7 @@ export default function CustomExamFormPage() {
       questionText: '',
       questionType: 'MCQ',
       marks: 1,
+      bloomTaxonomy: 'remember',
       options: [
         { optionText: '', isCorrect: false },
         { optionText: '', isCorrect: false },
@@ -92,7 +94,7 @@ export default function CustomExamFormPage() {
   const updateQuestion = (index: number, field: keyof Question, value: string | number | Question['options'] | Question['questionType']) => {
     setData(prev => ({
       ...prev,
-      questions: prev.questions.map((q, i) => 
+      questions: prev.questions.map((q, i) =>
         i === index ? { ...q, [field]: value } : q
       )
     }))
@@ -189,20 +191,20 @@ export default function CustomExamFormPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
-              <Input 
-                placeholder="e.g., Algebra" 
-                value={data.examDetails.topic} 
-                onChange={(e) => handleInputChange('topic', e.target.value)} 
+              <Input
+                placeholder="e.g., Algebra"
+                value={data.examDetails.topic}
+                onChange={(e) => handleInputChange('topic', e.target.value)}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Time Limit (minutes)</label>
-              <Input 
+              <Input
                 type="number"
-                placeholder="60" 
-                value={data.examDetails.timeLimitMinutes} 
-                onChange={(e) => handleInputChange('timeLimitMinutes', parseInt(e.target.value) || 0)} 
+                placeholder="60"
+                value={data.examDetails.timeLimitMinutes}
+                onChange={(e) => handleInputChange('timeLimitMinutes', parseInt(e.target.value) || 0)}
               />
             </div>
 
@@ -255,11 +257,11 @@ export default function CustomExamFormPage() {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="relative z-10">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Question Type</label>
-                            <Select 
-                              value={question.questionType} 
+                            <Select
+                              value={question.questionType}
                               onValueChange={(value: 'MCQ' | 'LONG' | 'SHORT') => {
                                 const updatedQuestion = { ...question, questionType: value }
                                 if (value === 'LONG' || value === 'SHORT') {
@@ -287,6 +289,26 @@ export default function CustomExamFormPage() {
                                 <SelectItem value="MCQ" className="cursor-pointer hover:bg-gray-100 px-3 py-2">Multiple Choice</SelectItem>
                                 <SelectItem value="SHORT" className="cursor-pointer hover:bg-gray-100 px-3 py-2">Short Answer</SelectItem>
                                 <SelectItem value="LONG" className="cursor-pointer hover:bg-gray-100 px-3 py-2">Long Answer</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="relative z-10">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Bloom's Taxonomy</label>
+                            <Select
+                              value={question.bloomTaxonomy || 'remember'}
+                              onValueChange={(value) => updateQuestion(index, 'bloomTaxonomy', value)}
+                            >
+                              <SelectTrigger className="w-full bg-white border border-gray-300 h-10">
+                                <SelectValue placeholder="Select Bloom's Taxonomy level" />
+                              </SelectTrigger>
+                              <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                                <SelectItem value="remember">Remember</SelectItem>
+                                <SelectItem value="understand">Understand</SelectItem>
+                                <SelectItem value="apply">Apply</SelectItem>
+                                <SelectItem value="analyze">Analyze</SelectItem>
+                                <SelectItem value="evaluate">Evaluate</SelectItem>
+                                <SelectItem value="create">Create</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
