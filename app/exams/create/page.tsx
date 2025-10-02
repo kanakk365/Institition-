@@ -37,7 +37,8 @@ export default function CreateExamPage() {
     dueDate: "",
     timeLimit: "",
     grade: "",
-    section: ""
+    section: "",
+    bloomTaxonomy: "remember"
   })
 
   useEffect(() => {
@@ -167,7 +168,7 @@ export default function CreateExamPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <div className="space-y-4">
                   <Label htmlFor="description" className="text-sm font-medium text-gray-700">
                     Description / Notes
@@ -180,7 +181,7 @@ export default function CreateExamPage() {
                     className="h-24 px-5 rounded-lg text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)] bg-[var(--primary-50)] border border-[color:var(--primary-100)]"
                   />
                 </div>
-                
+
                 <div className="space-y-4">
                   <Label htmlFor="examType" className="text-sm font-medium text-gray-700">
                     Exam Type
@@ -195,6 +196,25 @@ export default function CreateExamPage() {
                       <SelectItem value="final-exam">Final Exam</SelectItem>
                       <SelectItem value="class-test">Class Test</SelectItem>
                       <SelectItem value="practice">Practice Test</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-4">
+                  <Label htmlFor="bloomTaxonomy" className="text-sm font-medium text-gray-700">
+                    Bloom's Taxonomy
+                  </Label>
+                  <Select onValueChange={(value) => handleInputChange("bloomTaxonomy", value)}>
+                    <SelectTrigger className="h-14 px-5 rounded-lg w-full justify-between bg-[var(--primary-50)] border border-[color:var(--primary-100)] text-[color:var(--primary-700)] focus:ring-[color:var(--primary-300)]">
+                      <SelectValue placeholder="Select level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="remember">Remember</SelectItem>
+                      <SelectItem value="understand">Understand</SelectItem>
+                      <SelectItem value="apply">Apply</SelectItem>
+                      <SelectItem value="analyze">Analyze</SelectItem>
+                      <SelectItem value="evaluate">Evaluate</SelectItem>
+                      <SelectItem value="create">Create</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

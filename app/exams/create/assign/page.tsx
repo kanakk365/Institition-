@@ -16,6 +16,7 @@ interface ExamFormData {
   examType: string
   level: string
   questionType: string
+  bloomTaxonomy: string
   questionConfig: {
     questionType: string
     config: {
@@ -64,6 +65,7 @@ export default function CreateExamAssignPage() {
     examType: 'Questions & Answers',
     level: 'medium',
     questionType: 'both',
+    bloomTaxonomy: 'remember',
     questionConfig: {
       questionType: 'both',
       config: {
@@ -241,12 +243,13 @@ export default function CreateExamAssignPage() {
         examData={{
           title: examFormData?.topic || '',
           subject: examFormData?.subject || '',
-          description: `${examFormData?.questionType} questions at ${examFormData?.level} level`,
+          description: `${examFormData?.questionType} questions at ${examFormData?.level} level (${examFormData?.bloomTaxonomy} level)`,
           examType: examFormData?.examType || '',
           dueDate: new Date().toLocaleDateString(),
           timeLimit: '60 min',
           topic: examFormData?.topic || '',
           difficulty: examFormData?.level || '',
+          bloomTaxonomy: examFormData?.bloomTaxonomy || 'remember',
           questionCount: ((examFormData?.questionConfig.config.long?.count || 0) + (examFormData?.questionConfig.config.short?.count || 0)).toString()
         }}
         gradeAndSection={gradeAndSection}
@@ -327,13 +330,13 @@ export default function CreateExamAssignPage() {
                   placeholder="e.g., Wave Motion and Sound, Algebra, Organic Chemistry"
                   value={formData.topic}
                   onChange={(e) => handleInputChange('topic', e.target.value)}
-                  className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
+                  className="  bg-[var(--primary-50)] border border-[color:var(--primary-100)]  px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
                   required
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="space-y-4">
                 <Label htmlFor="examType" className="text-sm font-medium text-gray-700">
                   Exam Type
@@ -366,6 +369,27 @@ export default function CreateExamAssignPage() {
                       <SelectItem value="easy">Easy</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label htmlFor="bloomTaxonomy" className="text-sm font-medium text-gray-700">
+                  Bloom's Taxonomy
+                </Label>
+                <div className="relative">
+                  <Select value={formData.bloomTaxonomy} onValueChange={(value) => handleInputChange('bloomTaxonomy', value)}>
+                    <SelectTrigger className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
+                      <SelectItem value="remember">Remember</SelectItem>
+                      <SelectItem value="understand">Understand</SelectItem>
+                      <SelectItem value="apply">Apply</SelectItem>
+                      <SelectItem value="analyze">Analyze</SelectItem>
+                      <SelectItem value="evaluate">Evaluate</SelectItem>
+                      <SelectItem value="create">Create</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

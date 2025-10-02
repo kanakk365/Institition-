@@ -22,6 +22,7 @@ interface QuizFormData {
   questionCount: string;
   dueDate: string;
   timeLimit: string;
+  bloomTaxonomy: string;
 }
 
 interface QuizGenerationPayload {
@@ -41,7 +42,8 @@ export default function QuizFormPage() {
     subject: '',
     questionCount: '',
     dueDate: '',
-    timeLimit: ''
+    timeLimit: '',
+    bloomTaxonomy: 'remember'
   });
 
   const [selectedStudents, setSelectedStudents] = useState<SelectedStudent[]>([]);
@@ -80,6 +82,7 @@ export default function QuizFormPage() {
     if (!formData.questionCount) return 'Number of questions is required';
     if (!formData.dueDate) return 'Due date is required';
     if (!formData.timeLimit) return 'Time limit is required';
+    if (!formData.bloomTaxonomy) return 'Bloom\'s taxonomy level is required';
     return null;
   };
 
@@ -218,8 +221,8 @@ export default function QuizFormPage() {
                       <div className="font-medium text-gray-900">{formData.difficulty}</div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Subject</div>
-                      <div className="font-medium text-gray-900">{formData.subject}</div>
+                      <div className="text-sm text-gray-600 mb-1">Bloom's Taxonomy</div>
+                      <div className="font-medium text-gray-900">{formData.bloomTaxonomy}</div>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -351,7 +354,7 @@ export default function QuizFormPage() {
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="space-y-6">
             {/* First Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label htmlFor="topic" className="block text-sm font-medium text-gray-700">Topic</label>
                 <Input
@@ -371,6 +374,25 @@ export default function QuizFormPage() {
                   onChange={(e) => handleInputChange('difficulty', e.target.value)}
                   className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
                 />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="bloomTaxonomy" className="block text-sm font-medium text-gray-700">Bloom's Taxonomy</label>
+                <Select
+                  value={formData.bloomTaxonomy || undefined}
+                  onValueChange={(value) => handleInputChange('bloomTaxonomy', value)}
+                >
+                  <SelectTrigger id="bloomTaxonomy" className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                    <SelectItem value="remember">Remember</SelectItem>
+                    <SelectItem value="understand">Understand</SelectItem>
+                    <SelectItem value="apply">Apply</SelectItem>
+                    <SelectItem value="analyze">Analyze</SelectItem>
+                    <SelectItem value="evaluate">Evaluate</SelectItem>
+                    <SelectItem value="create">Create</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

@@ -13,6 +13,7 @@ interface ExamData {
   topic: string
   difficulty: string
   questionCount: string
+  bloomTaxonomy: string
 }
 
 interface Student {
@@ -146,7 +147,8 @@ export function ExamView({
     timeLimit: "10 min",
     topic: "Fractions",
     difficulty: "Medium",
-    questionCount: "5"
+    questionCount: "5",
+    bloomTaxonomy: "remember"
   }
 
   const data = examData || defaultExamData
@@ -194,7 +196,7 @@ export function ExamView({
                 <div className="font-medium text-gray-900">{data.description}</div>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div>
                 <div className="text-sm text-gray-600 mb-1">Exam type</div>
                 <div className="font-medium text-gray-900">{data.examType}</div>
@@ -206,6 +208,10 @@ export function ExamView({
               <div>
                 <div className="text-sm text-gray-600 mb-1">Time limit</div>
                 <div className="font-medium text-gray-900">{data.timeLimit}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 mb-1">Bloom's Taxonomy</div>
+                <div className="font-medium text-gray-900">{data.bloomTaxonomy}</div>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
