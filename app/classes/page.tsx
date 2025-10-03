@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Plus } from "lucide-react"
-import { Sidebar } from '@/components/ui/sidebar';
-import api from '@/lib/api';
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Sidebar } from "@/components/ui/sidebar";
+import api from "@/lib/api";
+import { Plus, Search } from "lucide-react";
 
 interface Standard {
   id: string;
@@ -121,6 +128,11 @@ export default function ClassesPage() {
   const [newClassName, setNewClassName] = useState('');
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSectionModal, setShowSectionModal] = useState(false);
+  const [sectionStandardId, setSectionStandardId] = useState<string | null>(null);
+  const [sectionGradeName, setSectionGradeName] = useState('');
+  const [newSectionName, setNewSectionName] = useState('');
+  const [addingSection, setAddingSection] = useState(false);
 
   // Fetch all students for a specific standard and section
   const fetchStudentsForSection = useCallback(async (standardName: string, sectionName: string): Promise<number> => {
@@ -338,6 +350,59 @@ export default function ClassesPage() {
     setSelectedSections([]);
   };
 
+  const openAddSectionModal = (standardId: string, gradeName: string) => {
+    setShowSectionModal(true);
+    setSectionStandardId(standardId);
+    setSectionGradeName(gradeName);
+    setNewSectionName('');
+    setError('');
+    setSuccess('');
+  };
+
+  const closeAddSectionModal = () => {
+    setShowSectionModal(false);
+    setSectionStandardId(null);
+    setSectionGradeName('');
+    setNewSectionName('');
+    setAddingSection(false);
+  };
+
+  const handleAddSection = async () => {
+    if (!sectionStandardId) {
+      setError('Unable to determine the selected grade. Please try again.');
+      return;
+    }
+
+    if (!newSectionName.trim()) {
+      setError('Please enter a section name');
+      return;
+    }
+
+    setAddingSection(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await api.post<ApiResponse<{ section: Section }>>('/institution-admin/sections', {
+        name: newSectionName.trim(),
+        standardId: sectionStandardId,
+      });
+
+      if (response.data.success) {
+        setSuccess(`Section "${newSectionName.trim()}" added to ${sectionGradeName}.`);
+        await fetchAllSections();
+        closeAddSectionModal();
+      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error && 'response' in err
+        ? (err as Error & { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create section'
+        : 'Failed to create section';
+      setError(errorMessage);
+    } finally {
+      setAddingSection(false);
+    }
+  };
+
   const toggleSection = (section: string) => {
     setSelectedSections(prev => 
       prev.includes(section) 
@@ -511,6 +576,75 @@ export default function ClassesPage() {
             </div>
           )}
 
+          {/* Add Section Modal */}
+          {showSectionModal && (
+            <div className="fixed inset-0 backdrop-blur-md bg-black/30 flex items-center justify-center z-50 p-4">
+              <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-lg w-full mx-4 transform transition-all duration-300 ease-out scale-100 opacity-100">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-[color:var(--primary-500)] to-[color:var(--primary-600)] bg-clip-text text-transparent flex items-center">
+                    <span className="mr-4 text-4xl">🧩</span>
+                    Add Section - {sectionGradeName}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={closeAddSectionModal}
+                    className="text-gray-400 hover:text-gray-600 text-xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100/50 transition-all duration-200 backdrop-blur-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label htmlFor="sectionName" className="block text-sm font-bold text-gray-800 mb-3">
+                      Section Name
+                    </label>
+                    <Input
+                      id="sectionName"
+                      value={newSectionName}
+                      onChange={(event) => setNewSectionName(event.target.value)}
+                      placeholder="Enter section name (e.g., A, B, C)"
+                      className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] transition-all duration-300 shadow-lg backdrop-blur-sm bg-white/90 text-lg"
+                    />
+                    <p className="text-sm text-gray-600 mt-2 font-medium">
+                      Create a new section for {sectionGradeName}. Students can later be assigned to this section.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4 mt-8">
+                  <button
+                    type="button"
+                    onClick={handleAddSection}
+                    disabled={addingSection}
+                    className="flex-1 bg-gradient-to-r from-[color:var(--primary-500)] to-[color:var(--primary-600)] text-[color:var(--primary-foreground)] py-4 px-6 rounded-2xl font-bold hover:from-[color:var(--primary-600)] hover:to-[color:var(--primary-700)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transform hover:scale-105 disabled:hover:scale-100 flex items-center justify-center backdrop-blur-sm"
+                  >
+                    {addingSection ? (
+                      <>
+                        <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-[color:var(--primary-foreground)] mr-3"></span>
+                        Adding Section...
+                      </>
+                    ) : (
+                      <>
+                        <span className="mr-3 text-lg">➕</span>
+                        Add Section
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={closeAddSectionModal}
+                    disabled={addingSection}
+                    className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50/80 transition-all duration-300 font-bold disabled:opacity-50 backdrop-blur-sm bg-white/80 shadow-lg transform hover:scale-105 disabled:hover:scale-100"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Table */}
           <div className="overflow-x-auto">
             {loading ? (
@@ -524,7 +658,7 @@ export default function ClassesPage() {
                     <th className="text-left py-4 px-6 font-medium text-[color:var(--primary-800)]">Grade</th>
                     <th className="text-left py-4 px-6 font-medium text-[color:var(--primary-800)]">Total Students</th>
                     <th className="text-left py-4 px-6 font-medium text-[color:var(--primary-800)]">Sections</th>
-                    <th className="text-left py-4 px-6 font-medium text-[color:var(--primary-800)]">View Button</th>
+                    <th className="text-left py-4 px-6 font-medium text-[color:var(--primary-800)]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -546,13 +680,23 @@ export default function ClassesPage() {
                         <td className="py-4 px-6 text-[color:var(--primary-700)]">{row.totalStudents}</td>
                         <td className="py-4 px-6 text-[color:var(--primary-700)]">{row.sections}</td>
                         <td className="py-4 px-6">
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleViewClass(row.id)}
-                            className="button-primary px-4 py-2 rounded-lg shadow-sm"
-                          >
-                            View
-                          </Button>
+                          <div className="flex flex-wrap gap-2">
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleViewClass(row.id)}
+                              className="button-primary px-4 py-2 rounded-lg shadow-sm"
+                            >
+                              View
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => openAddSectionModal(row.id, row.grade)}
+                              className="button-primary px-4 py-2 rounded-lg shadow-sm"
+                            >
+                              Add Section
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))
