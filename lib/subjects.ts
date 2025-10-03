@@ -1,5 +1,5 @@
 export const SUBJECT_OPTIONS = [
-  { value: "Mathematics", label: "Mathematics" },
+  { value: "Math", label: "Math" },
   { value: "Physics", label: "Physics" },
   { value: "Chemistry", label: "Chemistry" },
   { value: "Biology", label: "Biology" },
@@ -9,6 +9,10 @@ export const SUBJECT_OPTIONS = [
   { value: "Civics", label: "Civics" },
   { value: "Geography", label: "Geography" },
   { value: "English", label: "English" },
+  { value: "Science", label: "Science" },
+  { value: "Social Studies", label: "Social Studies" },
+  { value: "UG", label: "UG" },
+  { value: "PG", label: "PG" },
 ] as const;
 
 export type SubjectValue = (typeof SUBJECT_OPTIONS)[number]["value"];
