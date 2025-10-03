@@ -45,14 +45,33 @@ export default function SuperAdminDashboard() {
   const [isSubmittingMode, setIsSubmittingMode] = useState(false);
   const { toast } = useToast();
 
-  const modeOptions = useMemo(
-    () => [
-      { label: 'GPT', value: 'GPT' as const },
-      { label: 'CBSE', value: 'CBSE' as const },
-      { label: 'CAMBRIDGE', value: 'CAMBRIDGE' as const },
-    ],
-    []
+  const normalizedBoard = useMemo(
+    () => String(institution?.affiliatedBoard ?? '').trim().toUpperCase(),
+    [institution?.affiliatedBoard]
   );
+
+  const modeOptions = useMemo(() => {
+    const options: Array<{ label: string; value: 'GPT' | 'CBSE' | 'CAMBRIDGE' }> = [
+      { label: 'GPT', value: 'GPT' },
+    ];
+
+    if (normalizedBoard === 'CBSE') {
+      options.push({ label: 'CBSE', value: 'CBSE' });
+      return options;
+    }
+
+    if (normalizedBoard === 'CAMBRIDGE') {
+      options.push({ label: 'CAMBRIDGE', value: 'CAMBRIDGE' });
+      return options;
+    }
+
+    options.push(
+      { label: 'CBSE', value: 'CBSE' },
+      { label: 'CAMBRIDGE', value: 'CAMBRIDGE' },
+    );
+
+    return options;
+  }, [normalizedBoard]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -92,6 +111,13 @@ export default function SuperAdminDashboard() {
       setMode(inferredMode);
     }
   }, [institution]);
+
+  useEffect(() => {
+    const allowedModes = modeOptions.map((option) => option.value);
+    if (!allowedModes.includes(mode)) {
+      setMode(allowedModes[0]);
+    }
+  }, [modeOptions, mode]);
 
   const handleModeSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

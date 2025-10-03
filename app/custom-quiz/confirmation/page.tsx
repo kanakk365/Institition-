@@ -35,6 +35,37 @@ interface CreatedQuiz {
   questionCount: number
 }
 
+interface StoredQuizOption {
+  optionText: string
+  isCorrect: boolean
+  [key: string]: unknown
+}
+
+interface StoredQuizQuestion {
+  questionText: string
+  options?: StoredQuizOption[]
+  [key: string]: unknown
+}
+
+interface StoredQuizFormData {
+  quizDetails: {
+    title: string
+    subject: string
+    topic: string
+    timeLimitMinutes: number
+    instructions: string
+    difficulty: string
+    [key: string]: unknown
+  }
+  classSection: {
+    standardId: string
+    sectionId: string
+    [key: string]: unknown
+  }
+  questions?: StoredQuizQuestion[]
+  [key: string]: unknown
+}
+
 export default function CustomQuizConfirmationPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -65,7 +96,7 @@ export default function CustomQuizConfirmationPage() {
     }
 
     if (formData) {
-      const quizFormData = JSON.parse(formData)
+      const quizFormData = JSON.parse(formData) as StoredQuizFormData
       // Create a preview quiz object for display
       setCreatedQuiz({
         quizId: '', // Will be set after creation
@@ -75,7 +106,7 @@ export default function CustomQuizConfirmationPage() {
         timeLimitMinutes: quizFormData.quizDetails.timeLimitMinutes,
         instructions: quizFormData.quizDetails.instructions,
         difficulty: quizFormData.quizDetails.difficulty,
-        questionCount: quizFormData.questions.length
+        questionCount: quizFormData.questions?.length ?? 0
       })
     } else {
       // If no form data, redirect back to form
@@ -100,10 +131,28 @@ export default function CustomQuizConfirmationPage() {
         return
       }
 
-      const quizFormData = JSON.parse(formData)
+      const quizFormData = JSON.parse(formData) as StoredQuizFormData
       console.log('Creating quiz with data:', quizFormData)
 
-      const createResponse = await api.post('/institution-admin/custom-quizzes/create', quizFormData)
+      const sanitizedQuizPayload = {
+        quizDetails: quizFormData.quizDetails,
+        classSection: quizFormData.classSection,
+        questions: Array.isArray(quizFormData.questions)
+          ? quizFormData.questions.map((question) => ({
+              questionText: question.questionText,
+              options: Array.isArray(question.options)
+                ? question.options.map((option) => ({
+                    optionText: option.optionText,
+                    isCorrect: option.isCorrect,
+                  }))
+                : [],
+            }))
+          : [],
+      }
+
+      console.log('Sanitized quiz payload:', sanitizedQuizPayload)
+
+      const createResponse = await api.post('/institution-admin/custom-quizzes/create', sanitizedQuizPayload)
       
       if (!createResponse.data.success) {
         setError(createResponse.data.message || 'Failed to create quiz')

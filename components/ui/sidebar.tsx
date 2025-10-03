@@ -3,6 +3,7 @@
 import { useState, createContext, useContext, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -191,13 +192,47 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
         )}
       >
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <h1 className="text-lg text-gray-900">LOGO</h1>
-              <p className="text-sm text-gray-600">{institution?.name || 'Cambridge International School'}</p>
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-3">
+          <div
+            className={cn(
+              "flex items-center",
+              isCollapsed ? "justify-center w-full" : "gap-3"
+            )}
+          >
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-md bg-gray-100 flex items-center justify-center",
+                isCollapsed ? "h-10 w-10" : "h-12 w-12"
+              )}
+            >
+              {institution?.logoUrl ? (
+                <Image
+                  src={institution.logoUrl}
+                  alt={`${institution?.name ?? "Institution"} logo`}
+                  fill
+                  sizes="48px"
+                  className="object-contain"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-gray-600">
+                  {institution?.name?.charAt(0)?.toUpperCase() || "I"}
+                </span>
+              )}
             </div>
-          )}
+
+            {!isCollapsed && (
+              <div className="flex flex-col overflow-hidden">
+                <p className="text-base font-semibold text-gray-900 truncate">
+                  {institution?.name || "Institution"}
+                </p>
+                {institution?.affiliatedBoard && (
+                  <p className="text-xs text-gray-600 truncate">
+                    {institution.affiliatedBoard}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Collapse/Expand Button - Desktop only */}
           <Button

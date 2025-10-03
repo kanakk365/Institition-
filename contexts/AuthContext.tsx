@@ -15,12 +15,18 @@ interface Institution {
   yearOfEstablishment: string;
   totalStudentStrength: number;
   proofOfInstitutionUrl: string;
-  profilePhotoUrl?: string;
+  profilePhotoUrl?: string | null;
+  logoUrl?: string | null;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
+  pocName?: string | null;
   address: string;
   approvalStatus: string;
+  isSuspended?: boolean;
   createdAt: string;
   updatedAt: string;
   addedById: string;
+  curriculumMode?: string | null;
 }
 
 interface AuthContextType {
@@ -32,6 +38,53 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const formatInstitutionData = (rawInstitution: unknown): Institution => {
+  const record = (rawInstitution ?? {}) as Record<string, unknown>;
+
+  const toStringOrEmpty = (value: unknown, fallback = "") =>
+    value === null || value === undefined ? fallback : String(value);
+
+  const optionalString = (value: unknown): string | null => {
+    if (value === null || value === undefined || value === "") {
+      return null;
+    }
+    return String(value);
+  };
+
+  const numberValue = (value: unknown): number => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  return {
+    id: toStringOrEmpty(record.id ?? record._id),
+    name: toStringOrEmpty(record.name ?? record.institutionName ?? "Institution"),
+    type: toStringOrEmpty(record.type ?? "Educational"),
+    affiliatedBoard: toStringOrEmpty(record.affiliatedBoard),
+    email: toStringOrEmpty(record.email),
+    phone: toStringOrEmpty(record.phone),
+    website: toStringOrEmpty(record.website),
+    yearOfEstablishment: toStringOrEmpty(record.yearOfEstablishment),
+    totalStudentStrength: numberValue(record.totalStudentStrength),
+    proofOfInstitutionUrl: toStringOrEmpty(record.proofOfInstitutionUrl),
+    profilePhotoUrl: optionalString(record.profilePhotoUrl),
+    logoUrl: optionalString(record.logoUrl),
+    primaryColor: optionalString(record.primaryColor),
+    secondaryColor: optionalString(record.secondaryColor),
+    pocName: optionalString(record.pocName),
+    address: toStringOrEmpty(record.address),
+    approvalStatus: toStringOrEmpty(record.approvalStatus ?? "approved"),
+    isSuspended: Boolean(record.isSuspended ?? false),
+    createdAt: toStringOrEmpty(record.createdAt),
+    updatedAt: toStringOrEmpty(record.updatedAt),
+    addedById: toStringOrEmpty(record.addedById),
+    curriculumMode: optionalString(record.curriculumMode),
+  };
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -48,27 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user, token } = parsedAuth;
         
         if (user && token) {
-          // Convert user data to institution format for compatibility
-          const institutionData: Institution = {
-            id: user.id || user._id || '',
-            name: user.institutionName || user.name || 'Institution',
-            type: user.type || 'Educational',
-            affiliatedBoard: user.affiliatedBoard || '',
-            email: user.email || '',
-            phone: user.phone || '',
-            website: user.website || '',
-            yearOfEstablishment: user.yearOfEstablishment || '',
-            totalStudentStrength: user.totalStudentStrength || 0,
-            proofOfInstitutionUrl: user.proofOfInstitutionUrl || '',
-            profilePhotoUrl: user.profilePhotoUrl,
-            address: user.address || '',
-            approvalStatus: user.approvalStatus || 'approved',
-            createdAt: user.createdAt || '',
-            updatedAt: user.updatedAt || '',
-            addedById: user.addedById || '',
-          };
-          
-          setInstitution(institutionData);
+          const formattedInstitution = formatInstitutionData(user);
+
+          setInstitution(formattedInstitution);
           setIsAuthenticated(true);
         }
       } catch {
@@ -90,18 +125,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.data.success) {
         const { token, institution: institutionData } = response.data.data;
+        const formattedInstitution = formatInstitutionData(institutionData);
         
         // Store in both formats for compatibility
         const authData = {
           token,
-          user: institutionData
+          user: formattedInstitution
         };
         
         Cookies.set('auth', JSON.stringify(authData), { expires: 7 }); // Main auth cookie
         Cookies.set('auth-token', token, { expires: 7 }); // Token only
-        Cookies.set('institution-data', JSON.stringify(institutionData), { expires: 7 }); // Institution data
+        Cookies.set('institution-data', JSON.stringify(formattedInstitution), { expires: 7 }); // Institution data
         
-        setInstitution(institutionData);
+        setInstitution(formattedInstitution);
         setIsAuthenticated(true);
         
         return { success: true, message: response.data.message };
