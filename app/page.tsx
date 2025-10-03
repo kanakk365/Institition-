@@ -2,13 +2,15 @@
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ActivityChart } from "@/components/activity-chart"
 import { Button } from "@/components/ui/button"
 import { RecentStudents } from "@/components/recent-students"
 import { Users, ClipboardList, FolderOpen, TrendingUp } from "lucide-react"
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import api from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { ChartBarInteractive, SubjectPerformanceData } from "@/components/ui/barchart"
+
+const DEFAULT_INSTITUTION_ID = "cmcx8sm3y0000qe0r6xjq6imo";
 
 interface DashboardStats {
   totalStudents: number;
@@ -36,14 +38,30 @@ interface DashboardStats {
   };
 }
 
+type SummaryMetric = {
+  count: number;
+  changeFromLastMonth: number;
+};
+
+interface InstitutionAnalytics {
+  summary: {
+    totalStudents: SummaryMetric;
+    totalGrades: SummaryMetric;
+    totalSections: SummaryMetric;
+    totalTeachers: SummaryMetric;
+  };
+  performanceBySubject: SubjectPerformanceData[];
+}
+
 export default function SuperAdminDashboard() {
-  const { institution } = useAuth();
+  const { institution, isAuthenticated } = useAuth();
   const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'GPT' | 'CBSE' | 'CAMBRIDGE'>('GPT');
   const [isSubmittingMode, setIsSubmittingMode] = useState(false);
   const { toast } = useToast();
+  const [analytics, setAnalytics] = useState<InstitutionAnalytics | null>(null);
 
   const normalizedBoard = useMemo(
     () => String(institution?.affiliatedBoard ?? '').trim().toUpperCase(),
@@ -74,25 +92,57 @@ export default function SuperAdminDashboard() {
   }, [normalizedBoard]);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
     const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/institution-admin/dashboard');
-        if (response.data.success) {
-          setDashboardData(response.data.data.stats);
+      setLoading(true);
+      setError(null);
+      const institutionId = institution?.id || DEFAULT_INSTITUTION_ID;
+
+      const [dashboardResult, analyticsResult] = await Promise.allSettled([
+        api.get('/institution-admin/dashboard'),
+        api.get(`/analytics/institution/${institutionId}`),
+      ]);
+
+      let dashboardSuccess = false;
+      if (dashboardResult.status === 'fulfilled') {
+        const dashboardResponse = dashboardResult.value;
+        if (dashboardResponse.data?.success && dashboardResponse.data?.data?.stats) {
+          setDashboardData(dashboardResponse.data.data.stats);
+          dashboardSuccess = true;
         } else {
-          setError('Failed to fetch dashboard data');
+          setDashboardData(null);
         }
-      } catch (err) {
-        setError('Error fetching dashboard data');
-        console.error('Dashboard fetch error:', err);
-      } finally {
-        setLoading(false);
+      } else {
+        console.error('Dashboard stats fetch failed:', dashboardResult.reason);
+        setDashboardData(null);
       }
+
+      let analyticsSuccess = false;
+      if (analyticsResult.status === 'fulfilled') {
+        const analyticsResponse = analyticsResult.value;
+        if (analyticsResponse.data?.success && analyticsResponse.data?.data) {
+          setAnalytics(analyticsResponse.data.data as InstitutionAnalytics);
+          analyticsSuccess = true;
+        } else {
+          setAnalytics(null);
+        }
+      } else {
+        console.error('Institution analytics fetch failed:', analyticsResult.reason);
+        setAnalytics(null);
+      }
+
+      if (!dashboardSuccess && !analyticsSuccess) {
+        setError('Error fetching dashboard data');
+      }
+
+      setLoading(false);
     };
 
     fetchDashboardData();
-  }, []);
+  }, [institution?.id, isAuthenticated]);
 
   useEffect(() => {
     if (!institution) {
@@ -245,98 +295,81 @@ export default function SuperAdminDashboard() {
           )}
 
           {/* Dashboard Content */}
-          {!loading && !error && dashboardData && (
+          {!loading && !error && (
             <>
-              {/* Metrics Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-white border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-purple-100 rounded-lg">
-                        <Users className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{dashboardData.totalStudents}</p>
-                        <p className="text-sm text-gray-600">Total Students</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              {/* Summary Metrics */}
+              {analytics && (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  {[{
+                    key: "totalStudents" as const,
+                    title: "Total Students",
+                    icon: <Users className="h-6 w-6 text-purple-600" />,
+                    iconBg: "bg-purple-100",
+                  }, {
+                    key: "totalGrades" as const,
+                    title: "Total Grades",
+                    icon: <ClipboardList className="h-6 w-6 text-[color:var(--primary-600)]" />,
+                    iconBg: "bg-[var(--primary-50)]",
+                  }, {
+                    key: "totalSections" as const,
+                    title: "Total Sections",
+                    icon: <FolderOpen className="h-6 w-6 text-[color:var(--primary-600)]" />,
+                    iconBg: "bg-[var(--primary-50)]",
+                  }, {
+                    key: "totalTeachers" as const,
+                    title: "Total Teachers",
+                    icon: <TrendingUp className="h-6 w-6 text-blue-600" />,
+                    iconBg: "bg-blue-100",
+                  }].map(({ key, title, icon, iconBg }) => {
+                    const metric = analytics.summary[key];
+                    const isPositive = metric.changeFromLastMonth >= 0;
+                    return (
+                      <Card key={key} className="bg-white border-0 shadow-sm">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className={`p-3 rounded-lg ${iconBg}`}>
+                                {icon}
+                              </div>
+                              <div>
+                                <p className="text-2xl font-bold text-gray-900">{metric.count.toLocaleString()}</p>
+                                <p className="text-sm text-gray-600">{title}</p>
+                              </div>
+                            </div>
+                            
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
 
-                <Card className="bg-white border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-[var(--primary-50)] rounded-lg">
-                        <ClipboardList className="h-6 w-6 text-[color:var(--primary-600)]" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{dashboardData.totalQuizzes}</p>
-                        <p className="text-sm text-gray-600">Total Quizzes</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              
 
-                <Card className="bg-white border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-[var(--primary-50)] rounded-lg">
-                        <FolderOpen className="h-6 w-6 text-[color:var(--primary-600)]" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{dashboardData.projectsInProgress}</p>
-                        <p className="text-sm text-gray-600">Projects in Progress</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-blue-100 rounded-lg">
-                        <TrendingUp className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">{dashboardData.avgClassScore}%</p>
-                        <p className="text-sm text-gray-600">Avg Class Score</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Activity Graph */}
-              <Card className="bg-white border-0 shadow-sm">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-900">Activity Graph</CardTitle>
-                    <Button variant="ghost" size="sm" className="text-gray-500">
-                      {dashboardData.activityGraph.timeframe}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ActivityChart data={dashboardData.activityGraph.data} />
-                </CardContent>
-              </Card>
+              {/* Performance by Subject */}
+              {analytics?.performanceBySubject?.length ? (
+                <ChartBarInteractive performanceData={analytics.performanceBySubject} />
+              ) : null}
 
               {/* Recently Added Students */}
-              <Card className="bg-white border-0 shadow-sm">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      Recently added students ({dashboardData.recentStudents.timeframe})
-                    </CardTitle>
-                    <Button variant="ghost" size="sm" className="text-gray-500">
-                      See All
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <RecentStudents students={dashboardData.recentStudents.students} />
-                </CardContent>
-              </Card>
+              {dashboardData && (
+                <Card className="bg-white border-0 shadow-sm">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-gray-900">
+                        Recently added students ({dashboardData.recentStudents.timeframe})
+                      </CardTitle>
+                      <Button variant="ghost" size="sm" className="text-gray-500">
+                        See All
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <RecentStudents students={dashboardData.recentStudents.students} />
+                  </CardContent>
+                </Card>
+              )}
             </>
           )}
         </div>

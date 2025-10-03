@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Plus } from "lucide-react"
 import { Sidebar } from '@/components/ui/sidebar';
 import api from '@/lib/api';
@@ -89,6 +90,23 @@ interface Class {
   totalStudents: number;
   sections: string;
 }
+
+const gradeOptions = [
+  '1st Grade',
+  '2nd Grade',
+  '3rd Grade',
+  '4th Grade',
+  '5th Grade',
+  '6th Grade',
+  '7th Grade',
+  '8th Grade',
+  '9th Grade',
+  '10th Grade',
+  '11th Grade',
+  '12th Grade',
+  'UG',
+  'PG',
+];
 
 export default function ClassesPage() {
   const router = useRouter();
@@ -414,19 +432,24 @@ export default function ClassesPage() {
                     <label htmlFor="className" className="block text-sm font-bold text-gray-800 mb-4">
                       Class Name
                     </label>
-                    <input
-                      id="className"
-                      type="text"
-                      placeholder="e.g., 1st Grade, 2nd Grade, Class 10"
-                      value={newClassName}
-                      onChange={(e) => setNewClassName(e.target.value)}
-                      className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] transition-all duration-300 shadow-lg backdrop-blur-sm bg-white/90 text-lg placeholder-gray-400"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && newClassName.trim() && selectedSections.length > 0) {
-                          handleCreateNewClass();
-                        }
-                      }}
-                    />
+                    <Select
+                      value={newClassName || undefined}
+                      onValueChange={setNewClassName}
+                    >
+                      <SelectTrigger
+                        id="className"
+                        className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] transition-all duration-300 shadow-lg backdrop-blur-sm bg-white/90 text-lg text-left justify-between"
+                      >
+                        <SelectValue placeholder="Select a grade" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-2 border-[color:var(--primary-100)] shadow-xl bg-white/95 backdrop-blur-lg">
+                        {gradeOptions.map((grade) => (
+                          <SelectItem key={grade} value={grade}>
+                            {grade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
