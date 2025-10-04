@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/ui/sidebar';
 import api from '@/lib/api';
@@ -42,6 +42,7 @@ export default function AddStudentPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [dobError, setDobError] = useState('');
   
   // Standards and sections data
   const [standards, setStandards] = useState<Standard[]>([])
@@ -59,6 +60,37 @@ export default function AddStudentPage() {
     section: '',
     photo: null as File | null
   });
+
+  const maxDob = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const minDob = '1900-01-01';
+
+  const validateDob = useCallback((value: string) => {
+    if (!value) {
+      return '';
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return 'Please enter a valid date of birth (YYYY-MM-DD).';
+    }
+    const [year, month, day] = value.split('-').map(Number);
+    if ([year, month, day].some(part => Number.isNaN(part))) {
+      return 'Please enter a valid date of birth.';
+    }
+    const candidate = new Date(value);
+    if (Number.isNaN(candidate.getTime()) || candidate.toISOString().slice(0, 10) !== value) {
+      return 'Please enter a valid date of birth.';
+    }
+    const minYear = Number(minDob.split('-')[0]);
+    const maxYear = Number(maxDob.split('-')[0]);
+    if (year < minYear || year > maxYear || value < minDob || value > maxDob) {
+      return `Date of birth must be between ${minDob} and ${maxDob}.`;
+    }
+    return '';
+  }, [maxDob, minDob]);
+
+  const handleDobChange = useCallback((value: string) => {
+    setFormData(prev => ({ ...prev, dob: value }));
+    setDobError(validateDob(value));
+  }, [validateDob]);
 
   // Fetch all standards with their sections from API
   const fetchStandardsWithSections = useCallback(async () => {
@@ -121,14 +153,21 @@ export default function AddStudentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.gradeClass || !formData.section) {
       setError('Please fill in all required fields');
       return;
     }
+    const dobValidationMessage = validateDob(formData.dob);
+    if (dobValidationMessage) {
+      setDobError(dobValidationMessage);
+      setError(dobValidationMessage);
+      return;
+    }
+    setDobError('');
 
     setLoading(true);
-    setError('');
-    setSuccess('');
 
     try {
       // Use firstName and lastName directly from form data
@@ -181,6 +220,7 @@ export default function AddStudentPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -300,10 +340,15 @@ export default function AddStudentPage() {
                   id="dob"
                   type="date"
                   value={formData.dob}
-                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                  onChange={(e) => handleDobChange(e.target.value)}
+                  min={minDob}
+                  max={maxDob}
                   className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="Enter DOB"
                 />
+                {dobError && (
+                  <p className="mt-2 text-sm text-red-600">{dobError}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-2">
