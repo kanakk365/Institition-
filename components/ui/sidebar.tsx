@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, createContext, useContext, useEffect } from "react"
+import { useState, createContext, useContext, useEffect, useMemo, useCallback, useId, useLayoutEffect } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -26,17 +27,53 @@ import { useAuth } from "@/contexts/AuthContext"
 // Create Sidebar Context
 const SidebarContext = createContext<{
   collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
+  primarySidebarId: string | null;
+  registerSidebar: (id: string) => boolean;
+  unregisterSidebar: (id: string) => void;
 } | null>(null);
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false)
+  const [primarySidebarId, setPrimarySidebarId] = useState<string | null>(null)
+
+  const registerSidebar = useCallback((id: string) => {
+    let isPrimarySidebar = false
+
+    setPrimarySidebarId((current) => {
+      if (!current) {
+        isPrimarySidebar = true
+        return id
+      }
+
+      if (current === id) {
+        isPrimarySidebar = true
+        return current
+      }
+
+      return current
+    })
+
+    return isPrimarySidebar
+  }, [])
+
+  const unregisterSidebar = useCallback((id: string) => {
+    setPrimarySidebarId((current) => (current === id ? null : current))
+  }, [])
+
+  const contextValue = useMemo(() => ({
+    collapsed,
+    setCollapsed,
+    primarySidebarId,
+    registerSidebar,
+    unregisterSidebar,
+  }), [collapsed, primarySidebarId, registerSidebar, unregisterSidebar])
 
   return (
-    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+    <SidebarContext.Provider value={contextValue}>
       {children}
     </SidebarContext.Provider>
-  );
+  )
 }
 
 export function useSidebar() {
@@ -89,24 +126,55 @@ const bottomItems = [
 interface SidebarProps {
   className?: string;
   collapsed?: boolean;
-  setCollapsed?: (collapsed: boolean) => void;
+  setCollapsed?: Dispatch<SetStateAction<boolean>>;
 }
+
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 
 export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed: externalSetCollapsed }: SidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { institution, logout } = useAuth()
-  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false)
+  const {
+    collapsed: contextCollapsed,
+    setCollapsed: contextSetCollapsed,
+    primarySidebarId,
+    registerSidebar,
+    unregisterSidebar,
+  } = useSidebar()
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(contextCollapsed)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isQuizzesExpanded, setIsQuizzesExpanded] = useState(false)
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(false)
   const [isExamsExpanded, setIsExamsExpanded] = useState(false)
   const [isCustomExamsExpanded, setIsCustomExamsExpanded] = useState(false)
   const [isCustomQuizzesExpanded, setIsCustomQuizzesExpanded] = useState(false)
+  const [isPrimarySidebar, setIsPrimarySidebar] = useState(true)
+  const sidebarId = useId()
 
   // Use external collapsed state if provided, otherwise use internal state
-  const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalIsCollapsed
-  const setIsCollapsed = externalSetCollapsed || setInternalIsCollapsed
+  const isCollapsed = externalCollapsed ?? contextCollapsed ?? internalIsCollapsed
+  const setIsCollapsed = externalSetCollapsed ?? contextSetCollapsed ?? setInternalIsCollapsed
+  const navIconClassName = isCollapsed ? "h-5 w-5" : "h-5 w-5"
+
+  useIsomorphicLayoutEffect(() => {
+    const registeredAsPrimary = registerSidebar(sidebarId)
+    setIsPrimarySidebar(registeredAsPrimary)
+
+    return () => {
+      unregisterSidebar(sidebarId)
+    }
+  }, [registerSidebar, unregisterSidebar, sidebarId])
+
+  useEffect(() => {
+    if (primarySidebarId === null) {
+      const registeredAsPrimary = registerSidebar(sidebarId)
+      setIsPrimarySidebar(registeredAsPrimary)
+      return
+    }
+
+    setIsPrimarySidebar(primarySidebarId === sidebarId)
+  }, [primarySidebarId, registerSidebar, sidebarId])
 
   // Auto-expand sections when on respective pages
   useEffect(() => {
@@ -154,6 +222,10 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
     setIsMobileOpen(false) // Close mobile menu after navigation
   }
 
+  if (!isPrimarySidebar) {
+    return null
+  }
+
   return (
     <>
       {/* Mobile Hamburger Button */}
@@ -195,8 +267,8 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
         <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-3">
           <div
             className={cn(
-              "flex items-center",
-              isCollapsed ? "justify-center w-full" : "gap-3"
+              "flex items-center w-full min-w-0",
+              isCollapsed ? "justify-center" : "gap-3"
             )}
           >
             <div
@@ -221,8 +293,11 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
             </div>
 
             {!isCollapsed && (
-              <div className="flex flex-col overflow-hidden">
-                <p className="text-base font-semibold text-gray-900 truncate">
+              <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+                <p
+                  className="text-base font-semibold text-gray-900 truncate"
+                  title={institution?.name || undefined}
+                >
                   {institution?.name || "Institution"}
                 </p>
                 {institution?.affiliatedBoard && (
@@ -239,7 +314,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
             variant="ghost"
             size="icon"
             className="hidden md:flex h-8 w-8"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => setIsCollapsed((prev) => !prev)}
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -274,6 +349,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     closeAllSubMenus();
@@ -281,7 +357,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               ) : item.label === "Project Lab" ? (
@@ -292,6 +368,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     closeAllSubMenus();
@@ -299,7 +376,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               ) : item.label === "Exams" ? (
@@ -310,6 +387,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     closeAllSubMenus();
@@ -317,7 +395,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               ) : item.label === "Custom Exam" ? (
@@ -328,6 +406,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     closeAllSubMenus();
@@ -335,7 +414,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               ) : item.label === "Custom Quiz" ? (
@@ -346,6 +425,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     closeAllSubMenus();
@@ -353,7 +433,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               ) : (
@@ -364,6 +444,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     isActive
                       ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
+                    isCollapsed && "justify-center gap-0 px-0",
                   )}
                   onClick={() => {
                     // Close all sub-menus when clicking on non-expandable items
@@ -371,7 +452,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                     setIsMobileOpen(false);
                   }}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className={navIconClassName} />
                   {!isCollapsed && item.label}
                 </Link>
               )}
@@ -522,9 +603,12 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
               key={item.label}
               variant="ghost"
               onClick={() => handleNavigation(item.href)}
-              className={cn("w-full justify-start h-10 text-gray-700 hover:text-gray-900", isCollapsed && "px-2")}
+              className={cn(
+                "w-full justify-start h-10 text-gray-700 hover:text-gray-900",
+                isCollapsed && "justify-center px-0"
+              )}
             >
-              <item.icon className={cn("h-5 w-5", !isCollapsed && "mr-3")} />
+              <item.icon className={cn(isCollapsed ? "h-8 w-8" : "h-5 w-5", !isCollapsed && "mr-3")} />
               {!isCollapsed && <span>{item.label}</span>}
             </Button>
           ))}
