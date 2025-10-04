@@ -367,13 +367,22 @@ export default function QuizFormPage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700">Difficulty</label>
-                <Input
-                  id="difficulty"
-                  placeholder="Easy / Medium / Hard"
-                  value={formData.difficulty}
-                  onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
-                />
+                <Select
+                  value={formData.difficulty || undefined}
+                  onValueChange={(value) => handleInputChange('difficulty', value)}
+                >
+                  <SelectTrigger
+                    id="difficulty"
+                    className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
+                  >
+                    <SelectValue placeholder="Select difficulty" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                    <SelectItem value="Easy">Easy</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Hard">Hard</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label htmlFor="bloomTaxonomy" className="block text-sm font-medium text-gray-700">Bloom's Taxonomy</label>
