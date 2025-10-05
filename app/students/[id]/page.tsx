@@ -1,9 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Sidebar } from '@/components/ui/sidebar';
 import api from '@/lib/api';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ClipboardList, FileText, TrendingUp, Users } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
 
 interface Student {
   id: string;
@@ -57,6 +75,54 @@ interface ApiResponse<T> {
   data: T;
 }
 
+interface SubjectStat {
+  subject: string;
+  totalAttempts: number;
+  averageScore: number;
+  quizAttempts: number;
+  examAttempts: number;
+  customQuizAttempts: number;
+  customExamAttempts: number;
+  quizAverageScore: number;
+  examAverageScore: number;
+  customQuizAverageScore: number;
+  customExamAverageScore: number;
+}
+
+interface StudentStats {
+  subjectStats: SubjectStat[];
+  totalSubjects: number;
+  filters: {
+    gradeId: string | null;
+    sectionId: string | null;
+    subject: string | null;
+    activityType: string | null;
+  };
+}
+
+type MetricKey =
+  | 'averageScore'
+  | 'quizAverageScore'
+  | 'examAverageScore'
+  | 'customQuizAverageScore'
+  | 'customExamAverageScore';
+
+const metricOptions: Array<{ value: MetricKey; label: string }> = [
+  { value: 'averageScore', label: 'Overall Average Score' },
+  { value: 'quizAverageScore', label: 'Quiz Average Score' },
+  { value: 'examAverageScore', label: 'Exam Average Score' },
+  { value: 'customQuizAverageScore', label: 'Custom Quiz Average Score' },
+  { value: 'customExamAverageScore', label: 'Custom Exam Average Score' },
+];
+
+const metricLabels: Record<MetricKey, string> = metricOptions.reduce(
+  (acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  },
+  {} as Record<MetricKey, string>
+);
+
 export default function StudentDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -65,6 +131,10 @@ export default function StudentDetailPage() {
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [studentStats, setStudentStats] = useState<StudentStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [statsError, setStatsError] = useState('');
+  const [selectedMetric, setSelectedMetric] = useState<MetricKey>('averageScore');
   
   // Expandable sections state
   const [expandedSections, setExpandedSections] = useState({
@@ -74,6 +144,95 @@ export default function StudentDetailPage() {
     progress: false,
     household: false
   });
+
+  const attemptTotals = useMemo(
+    () => {
+      if (!studentStats?.subjectStats?.length) {
+        return {
+          quizAttempts: 0,
+          examAttempts: 0,
+          customQuizAttempts: 0,
+          customExamAttempts: 0,
+        };
+      }
+
+      return studentStats.subjectStats.reduce(
+        (acc, current) => {
+          acc.quizAttempts += Number(current.quizAttempts ?? 0);
+          acc.examAttempts += Number(current.examAttempts ?? 0);
+          acc.customQuizAttempts += Number(current.customQuizAttempts ?? 0);
+          acc.customExamAttempts += Number(current.customExamAttempts ?? 0);
+          return acc;
+        },
+        {
+          quizAttempts: 0,
+          examAttempts: 0,
+          customQuizAttempts: 0,
+          customExamAttempts: 0,
+        }
+      );
+    },
+    [studentStats]
+  );
+
+  const attemptCards = useMemo(
+    () => [
+      {
+        key: 'quizAttempts' as const,
+        label: 'Quiz Attempts',
+        value: attemptTotals.quizAttempts,
+        icon: ClipboardList,
+        iconBg: 'bg-purple-100',
+        iconColor: 'text-purple-600',
+      },
+      {
+        key: 'examAttempts' as const,
+        label: 'Exam Attempts',
+        value: attemptTotals.examAttempts,
+        icon: FileText,
+        iconBg: 'bg-blue-100',
+        iconColor: 'text-blue-600',
+      },
+      {
+        key: 'customQuizAttempts' as const,
+        label: 'Custom Quiz Attempts',
+        value: attemptTotals.customQuizAttempts,
+        icon: Users,
+        iconBg: 'bg-emerald-100',
+        iconColor: 'text-emerald-600',
+      },
+      {
+        key: 'customExamAttempts' as const,
+        label: 'Custom Exam Attempts',
+        value: attemptTotals.customExamAttempts,
+        icon: TrendingUp,
+        iconBg: 'bg-amber-100',
+        iconColor: 'text-amber-600',
+      },
+    ],
+    [attemptTotals]
+  );
+
+  const chartData = useMemo(
+    () => {
+      if (!studentStats?.subjectStats?.length) {
+        return [] as Array<{ subject: string; value: number }>;
+      }
+
+      return studentStats.subjectStats.map((stat) => ({
+        subject: stat.subject,
+        value: Number((stat as Record<MetricKey, number>)[selectedMetric] ?? 0),
+      }));
+    },
+    [selectedMetric, studentStats]
+  );
+
+  const hasChartData = useMemo(
+    () => chartData.some((item) => item.value > 0),
+    [chartData]
+  );
+
+  const selectedMetricLabel = metricLabels[selectedMetric];
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -99,6 +258,35 @@ export default function StudentDetailPage() {
     };
 
     fetchStudent();
+  }, [studentId]);
+
+  useEffect(() => {
+    const fetchStudentStats = async () => {
+      if (!studentId) return;
+
+      try {
+        setStatsLoading(true);
+        setStatsError('');
+        const response = await api.get<ApiResponse<StudentStats>>(`/analytics/student-stats/${studentId}`);
+
+        if (response.data.success && response.data.data) {
+          setStudentStats(response.data.data);
+        } else {
+          setStudentStats(null);
+          setStatsError(response.data.message || 'Failed to fetch student analytics');
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error && 'response' in err
+          ? (err as Error & { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch student analytics'
+          : 'Failed to fetch student analytics';
+        setStatsError(errorMessage);
+        setStudentStats(null);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchStudentStats();
   }, [studentId]);
 
   const formatDate = (dateString: string) => {
@@ -165,338 +353,107 @@ export default function StudentDetailPage() {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto">
-          
-          {/* Simple Collapsible Sections */}
-          <div className="space-y-1">
-            {/* Overview Section */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => toggleSection('overview')}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-medium text-gray-900">Overview</span>
-                <svg 
-                  className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.overview ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-label="Toggle overview section"
-                >
-                  <title>Toggle overview section</title>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {expandedSections.overview && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Full Name</div>
-                        <div className="text-gray-900">{student.firstName} {student.lastName}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Email</div>
-                        <div className="text-gray-900">{student.email}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Grade / Section</div>
-                        <div className="text-gray-900">{student.standard.name} - {student.studentSection.name}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Institution</div>
-                        <div className="text-gray-900">{student.institution.name}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Status</div>
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: "var(--primary-500)" }}></div>
-                          <span className="text-gray-900">Active</span>
+        <div className="mx-auto w-full max-w-5xl space-y-8">
+          {statsLoading && (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+              <div className="flex items-center gap-3 text-gray-600">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-[var(--primary-500)]" />
+                <span className="text-sm font-medium">Loading student analytics…</span>
+              </div>
+            </div>
+          )}
+
+          {statsError && !statsLoading && (
+            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+              <p className="text-sm font-medium">{statsError}</p>
+            </div>
+          )}
+
+          {studentStats && !statsError && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {attemptCards.map((card) => {
+                  const Icon = card.icon;
+                  return (
+                    <Card key={card.key} className="border-0 shadow-sm">
+                      <CardContent className="flex items-center justify-between p-5">
+                        <div>
+                          <p className="text-sm text-gray-500">{card.label}</p>
+                          <p className="mt-2 text-2xl font-semibold text-gray-900">{card.value}</p>
                         </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-500 mb-1">Date Added</div>
-                        <div className="text-gray-900">{formatDate(student.createdAt)}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+                        <div className={`rounded-full p-3 ${card.iconBg}`}>
+                          <Icon className={`h-6 w-6 ${card.iconColor}`} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
 
-            {/* Quizzes Section */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => toggleSection('quizzes')}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-medium text-gray-900">Quizzes</span>
-                <svg 
-                  className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.quizzes ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-label="Toggle quizzes section"
-                >
-                  <title>Toggle quizzes section</title>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {expandedSections.quizzes && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <div className="mt-6">
-                    {student.quizzes.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full">
-                          <thead className="text-white" style={{ backgroundColor: "var(--primary-500)" }}>
-                            <tr>
-                              <th className="px-4 py-3 text-left text-sm font-medium">Quiz Title</th>
-                              <th className="px-4 py-3 text-left text-sm font-medium">Subject</th>
-                              <th className="px-4 py-3 text-left text-sm font-medium">Score</th>
-                              <th className="px-4 py-3 text-left text-sm font-medium">Time Taken</th>
-                              <th className="px-4 py-3 text-left text-sm font-medium">Date</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            <tr className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">Fractions Basics</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">Math</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">87%</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">6 min</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">03 Jul 2025</td>
-                            </tr>
-                            <tr className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">Photosynthesis</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">Science</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">90%</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">3 min</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">03 Jul 2025</td>
-                            </tr>
-                            <tr className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">Figures of Speech</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">English</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">78%</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">7min</td>
-                              <td className="px-4 py-3 text-sm text-gray-600">12 Jul 2025</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500">No quizzes completed yet</p>
-                      </div>
-                    )}
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="flex flex-col gap-4 border-b border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Subject Performance</h3>
+                    <p className="text-sm text-gray-500">Viewing {selectedMetricLabel.toLowerCase()}</p>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Projects Section */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => toggleSection('projects')}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-medium text-gray-900">Projects</span>
-                <svg 
-                  className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.projects ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-label="Toggle projects section"
-                >
-                  <title>Toggle projects section</title>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {expandedSections.projects && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <div className="mt-6">
-                    {student.Project.length > 0 ? (
-                      <div className="space-y-4">
-                        {(student.Project as { id?: string; title?: string; description?: string; status?: string }[]).map((project, index) => (
-                          <div key={project.id || `project-${index}`} className="border border-gray-200 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-gray-900">{project.title || `Project ${index + 1}`}</h4>
-                              <span className="text-sm text-gray-500">{project.status || 'In Progress'}</span>
-                            </div>
-                            <p className="text-sm text-gray-600">{project.description || 'No description available'}</p>
-                          </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-600">Metric</span>
+                    <Select value={selectedMetric} onValueChange={(value) => setSelectedMetric(value as MetricKey)}>
+                      <SelectTrigger className="min-w-[220px]">
+                        <SelectValue placeholder="Select metric" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {metricOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
                         ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500">No projects assigned yet</p>
-                      </div>
-                    )}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-              )}
-            </div>
-
-            {/* Progress Section */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => toggleSection('progress')}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-medium text-gray-900">Progress</span>
-                <svg 
-                  className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.progress ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-label="Toggle progress section"
-                >
-                  <title>Toggle progress section</title>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {expandedSections.progress && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <div className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-900 mb-4">Academic Summary</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Total Quizzes</span>
-                            <span className="font-medium text-gray-900">{student.quizzes.length}</span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Total Projects</span>
-                            <span className="font-medium text-gray-900">{student.Project.length}</span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Assigned Exams</span>
-                            <span className="font-medium text-gray-900">{student.assignedExams.length}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-900 mb-4">Account Status</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Registration</span>
-                            <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                              student.isRegistrationCompleted 
-                                ? 'bg-[var(--primary-100)] text-[color:var(--primary-800)]' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {student.isRegistrationCompleted ? 'Completed' : 'Pending'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Verification</span>
-                            <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                              student.isVerified 
-                                ? 'bg-[var(--primary-100)] text-[color:var(--primary-800)]' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {student.isVerified ? 'Verified' : 'Pending'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <span className="text-gray-700">Account Status</span>
-                            <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                              student.isActive 
-                                ? 'bg-[var(--primary-100)] text-[color:var(--primary-800)]' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {student.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                <div className="p-6">
+                  {hasChartData ? (
+                    <div className="h-80 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={chartData}
+                          margin={{ top: 16, right: 24, left: 16, bottom: 32 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis
+                            dataKey="subject"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 12, fill: '#6b7280' }}
+                            interval={0}
+                            angle={-15}
+                            textAnchor="end"
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 12, fill: '#6b7280' }}
+                          />
+                          <Tooltip
+                            formatter={(value: number) => [value, selectedMetricLabel]}
+                            cursor={{ fill: 'rgba(79, 70, 229, 0.08)' }}
+                          />
+                          <Bar dataKey="value" fill="var(--primary-500)" radius={[8, 8, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Household Section */}
-            <div className="bg-white border border-gray-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => toggleSection('household')}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-medium text-gray-900">Household</span>
-                <svg 
-                  className={`w-5 h-5 text-gray-400 transition-transform ${expandedSections.household ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-label="Toggle household section"
-                >
-                  <title>Toggle household section</title>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {expandedSections.household && (
-                <div className="px-6 pb-6 border-t border-gray-100">
-                  <div className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <span className="text-sm font-medium text-gray-500">Phone Number</span>
-                            <p className="text-gray-900">{student.phone}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-gray-500">Email Address</span>
-                            <p className="text-gray-900">{student.email}</p>
-                          </div>
-                          {student.alternatePhone && (
-                            <div>
-                              <span className="text-sm font-medium text-gray-500">Alternate Phone</span>
-                              <p className="text-gray-900">{student.alternatePhone}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-900 mb-4">Personal Information</h4>
-                        <div className="space-y-3">
-                          <div>
-                            <span className="text-sm font-medium text-gray-500">Date of Birth</span>
-                            <p className="text-gray-900">{formatDate(student.dob)}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-gray-500">Gender</span>
-                            <p className="text-gray-900 capitalize">{student.gender.toLowerCase()}</p>
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-gray-500">Institution</span>
-                            <p className="text-gray-900">{student.institution.name}</p>
-                          </div>
-                        </div>
-                      </div>
+                  ) : (
+                    <div className="py-12 text-center text-sm text-gray-500">
+                      No analytics available for this metric yet.
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
+
+
         </div>
       </div>
     </div>

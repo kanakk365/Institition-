@@ -32,7 +32,8 @@ interface QuizGenerationPayload {
   questionConfig: {
     count: number;
     marksPerQuestion: number;
-  }
+  };
+  bloomTaxanomy: string;
 }
 
 export default function QuizFormPage() {
@@ -111,7 +112,8 @@ export default function QuizFormPage() {
         questionConfig: {
           count: parseInt(formData.questionCount) || 10,
           marksPerQuestion: 2
-        }
+        },
+        bloomTaxanomy: formData.bloomTaxonomy
       };
 
       console.log('Generating quiz with payload:', payload);

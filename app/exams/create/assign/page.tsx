@@ -178,7 +178,8 @@ export default function CreateExamAssignPage() {
         examType: getApiExamType(examFormData.examType),
         level: examFormData.level,
         questionType: examFormData.questionType,
-        questionConfig: examFormData.questionConfig
+        questionConfig: examFormData.questionConfig,
+        bloomTaxanomy: examFormData.bloomTaxonomy
       }
       
       console.log('Generating exam with data:', apiPayload)

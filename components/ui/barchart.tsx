@@ -256,7 +256,7 @@ export function ChartBarInteractive({ userData, performanceData }: ChartBarInter
   const chartElement = (
     <ChartContainer
       config={chartConfig}
-      className={showPerformanceChart ? "min-h-[420px] w-full" : "aspect-auto h-[250px] w-full"}
+      className={showPerformanceChart ? "min-h-[320px] w-full" : "aspect-auto h-[250px] w-full"}
     >
       <BarChart
         accessibilityLayer
