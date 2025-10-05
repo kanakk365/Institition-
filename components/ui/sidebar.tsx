@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Plus,
   Eye,
+  User,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
@@ -86,8 +87,9 @@ export function useSidebar() {
 
 const navigationItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: User, label: "Profile", href: "/profile" },
   { icon: GraduationCap, label: "Class", href: "/classes" },
-  { icon: Users, label: "Students", href: "/students" },  
+  { icon: Users, label: "Students", href: "/students" },
   { icon: FlaskConical, label: "Project Lab", href: "/projects" },
   { icon: FileQuestion, label: "Quizzes", href: "/quizzes" },
   { icon: FileText, label: "Exams", href: "/exams" },
@@ -322,13 +324,14 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-hide">
         {navigationItems.map((item) => {
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.label === "Students" && pathname.startsWith("/students")) ||
             (item.label === "Quizzes" && pathname.startsWith("/quizzes")) ||
             (item.label === "Project Lab" && pathname.startsWith("/projects")) ||
             (item.label === "Exams" && pathname.startsWith("/exams")) ||
             (item.label === "Custom Exam" && pathname.startsWith("/custom-exam")) ||
-            (item.label === "Custom Quiz" && pathname.startsWith("/custom-quiz"))
+            (item.label === "Custom Quiz" && pathname.startsWith("/custom-quiz")) ||
+            (item.label === "Profile" && pathname.startsWith("/profile"))
 
           // Function to close all sub-menus
           const closeAllSubMenus = () => {
