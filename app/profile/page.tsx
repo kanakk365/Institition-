@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
-import { Calendar, Users, User, Eye, Plus } from "lucide-react"
+import { Calendar, Users, User, Eye, TrendingUp, Check, X } from "lucide-react"
 
 export default function ProfilePage() {
   const { institution, loading } = useAuth()
@@ -54,31 +54,31 @@ export default function ProfilePage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'approved':
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-[color:var(--primary-50)] text-[color:var(--primary-700)] border-[color:var(--primary-200)]'
       case 'pending':
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-[color:var(--primary-50)] text-[color:var(--primary-700)] border-[color:var(--primary-200)]'
       case 'rejected':
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-[color:var(--primary-50)] text-[color:var(--primary-700)] border-[color:var(--primary-200)]'
       default:
-        return 'bg-red-50 text-red-700 border-red-200'
+        return 'bg-[color:var(--primary-50)] text-[color:var(--primary-700)] border-[color:var(--primary-200)]'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'approved':
-        return <Plus className="h-4 w-4 text-red-600" />
+        return <Check className="h-4 w-4 text-[color:var(--primary-600)]" />
       case 'pending':
-        return <Calendar className="h-4 w-4 text-red-600" />
+        return <Calendar className="h-4 w-4 text-[color:var(--primary-600)]" />
       case 'rejected':
-        return <Eye className="h-4 w-4 text-red-600" />
+        return <X className="h-4 w-4 text-[color:var(--primary-600)]" />
       default:
-        return <Plus className="h-4 w-4 text-red-600" />
+        return <Check className="h-4 w-4 text-[color:var(--primary-600)]" />
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-red-50 to-rose-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-[color:var(--primary-50)] to-[color:var(--primary-100)]">
       <Sidebar />
 
       <div className="flex-1 p-6">
@@ -96,8 +96,8 @@ export default function ProfilePage() {
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-xl">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <Plus className="h-6 w-6 text-red-600" />
+                  <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                    <User className="h-6 w-6 text-[color:var(--primary-600)]" />
                   </div>
                   Institution Overview
                 </CardTitle>
@@ -109,7 +109,7 @@ export default function ProfilePage() {
                       {institution.logoUrl ? (
                         <AvatarImage src={institution.logoUrl} alt={`${institution.name} logo`} />
                       ) : null}
-                      <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-red-500 to-rose-600 text-white">
+                      <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-[color:var(--primary-500)] to-[color:var(--primary-600)] text-white">
                         {institution.name?.charAt(0)?.toUpperCase() || "I"}
                       </AvatarFallback>
                     </Avatar>
@@ -144,8 +144,8 @@ export default function ProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <User className="h-5 w-5 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <User className="h-5 w-5 text-[color:var(--primary-600)]" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Email Address</p>
@@ -154,8 +154,8 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <User className="h-5 w-5 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <User className="h-5 w-5 text-[color:var(--primary-600)]" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Phone Number</p>
@@ -164,14 +164,14 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Eye className="h-5 w-5 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <Eye className="h-5 w-5 text-[color:var(--primary-600)]" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Website</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {institution.website ? (
-                          <a href={institution.website} target="_blank" rel="noopener noreferrer" className="text-red-600 hover:underline">
+                          <a href={institution.website} target="_blank" rel="noopener noreferrer" className="text-[color:var(--primary-600)] hover:underline">
                             {institution.website}
                           </a>
                         ) : (
@@ -182,8 +182,8 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Calendar className="h-5 w-5 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <Calendar className="h-5 w-5 text-[color:var(--primary-600)]" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Address</p>
@@ -197,22 +197,22 @@ export default function ProfilePage() {
                 {/* Institution Stats */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <div className="p-1 bg-red-100 rounded">
-                      <Plus className="h-4 w-4 text-red-600" />
+                    <div className="p-1 bg-[color:var(--primary-100)] rounded">
+                      <TrendingUp className="h-4 w-4 text-[color:var(--primary-600)]" />
                     </div>
                     Institution Stats
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                    <div className="p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-600">Curriculum Mode</span>
-                        <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
+                        <Badge className="bg-[color:var(--primary-100)] text-[color:var(--primary-700)] border-[color:var(--primary-200)] hover:bg-[color:var(--primary-100)]">
                           {institution.curriculumMode || "Standard"}
                         </Badge>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                    <div className="p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-600">Approval Status</span>
                         <Badge className={`flex items-center gap-1 ${getStatusColor(institution.approvalStatus)} hover:bg-transparent`}>
@@ -226,7 +226,7 @@ export default function ProfilePage() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-600">Account Status</span>
                         <div className="flex items-center gap-1">
-                          <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
+                          <Badge className="bg-[color:var(--primary-100)] text-[color:var(--primary-700)] border-[color:var(--primary-200)] hover:bg-[color:var(--primary-100)]">
                             {institution.isSuspended ? 'Suspended' : 'Active'}
                           </Badge>
                         </div>
@@ -242,16 +242,16 @@ export default function ProfilePage() {
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm mt-8">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <User className="h-6 w-6 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <User className="h-6 w-6 text-[color:var(--primary-600)]" />
                     </div>
                     Point of Contact
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                  <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                     <div className="p-3 bg-white rounded-full shadow-sm">
-                      <User className="h-6 w-6 text-red-600" />
+                      <User className="h-6 w-6 text-[color:var(--primary-600)]" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Contact Person</p>
@@ -267,8 +267,8 @@ export default function ProfilePage() {
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm mt-8">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Eye className="h-6 w-6 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <Eye className="h-6 w-6 text-[color:var(--primary-600)]" />
                     </div>
                     Institution Verification
                   </CardTitle>
@@ -281,7 +281,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-3">
                       <Button
                         variant="outline"
-                        className="gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                        className="gap-2 border-[color:var(--primary-200)] text-[color:var(--primary-700)] "
                         asChild
                       >
                         <a
@@ -304,15 +304,15 @@ export default function ProfilePage() {
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm mt-8">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Plus className="h-6 w-6 text-red-600" />
+                    <div className="p-2 bg-[color:var(--primary-100)] rounded-lg">
+                      <Eye className="h-6 w-6 text-[color:var(--primary-600)]" />
                     </div>
                     Brand Colors
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {institution.primaryColor && (
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                    <div className="p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                       <div className="flex items-center gap-4">
                         <div
                           className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
@@ -329,7 +329,7 @@ export default function ProfilePage() {
                   )}
 
                   {institution.secondaryColor && (
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                    <div className="p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                       <div className="flex items-center gap-4">
                         <div
                           className="w-8 h-8 rounded-full border-2 border-white shadow-lg"

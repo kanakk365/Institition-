@@ -618,7 +618,10 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
 
           {/* User Profile */}
           {!isCollapsed && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 mt-4">
+            <div
+              className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 mt-4 cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => handleNavigation('/profile')}
+            >
               <Avatar className="h-10 w-10">
                 {institution?.profilePhotoUrl ? (
                   <AvatarImage src={institution.profilePhotoUrl} alt={institution.name} />
