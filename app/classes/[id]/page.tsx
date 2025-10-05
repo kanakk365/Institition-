@@ -148,201 +148,30 @@ export default function ClassDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{classStats.grade}</h1>
-          <Badge className="bg-[var(--primary-100)] text-[color:var(--primary-800)] hover:bg-[var(--primary-100)]">
-            Active
-          </Badge>
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+          <div className="mb-4">
+            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg
+                className="w-8 h-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Data Available</h2>
+            <p className="text-gray-600">
+              No data available for this page, I will add new API later
+            </p>
+          </div>
         </div>
-
-        {/* Students Section */}
-        <Card className="bg-white">
-          <CardContent className="p-0">
-            <button
-              type="button"
-              onClick={() => toggleSection("students")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
-            >
-              <h2 className="text-lg font-semibold text-gray-900">Students</h2>
-              <div className="flex items-center gap-2">
-                <ExternalLink className="h-4 w-4 text-gray-400" />
-                {expandedSections.students ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedSections.students && (
-              <div className="border-t border-[color:var(--primary-100)] p-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Total Students</p>
-                    <p className="text-2xl font-bold text-gray-900">{classStats.totalStudents}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Grade / Section</p>
-                    <p className="text-lg font-semibold text-gray-900">A,B,C,D</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Status</p>
-                    <Badge className="bg-[var(--primary-100)] text-[color:var(--primary-800)]">
-                      Active
-                    </Badge>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Average score</p>
-                    <p className="text-lg font-semibold text-gray-900">{classStats.statistics.overallPerformance}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Projects Completed</p>
-                    <p className="text-lg font-semibold text-gray-900">{classStats.statistics.projects.completed}+</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Exam Participation Rate</p>
-                    <p className="text-lg font-semibold text-gray-900">98%</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quizzes Section */}
-        <Card className="bg-white">
-          <CardContent className="p-0">
-            <button
-              type="button"
-              onClick={() => toggleSection("quizzes")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
-            >
-              <h2 className="text-lg font-semibold text-gray-900">Quizzes</h2>
-              <div className="flex items-center gap-2">
-                <ExternalLink className="h-4 w-4 text-gray-400" />
-                {expandedSections.quizzes ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedSections.quizzes && (
-              <div className="overflow-hidden">
-                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
-                  <div>Quiz Title</div>
-                  <div>Subject</div>
-                  <div>Score</div>
-                  <div>Time Taken</div>
-                  <div>Date</div>
-                </div>
-                {quizData.map((quiz, index) => (
-                  <div key={`${quiz.title}-${quiz.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
-                    <div className="text-gray-900">{quiz.title}</div>
-                    <div className="text-gray-600">{quiz.subject}</div>
-                    <div className="text-gray-900">{quiz.score}%</div>
-                    <div className="text-gray-600">{quiz.timeTaken}</div>
-                    <div className="text-gray-600">{quiz.date}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Projects Section */}
-        <Card className="bg-white">
-          <CardContent className="p-0">
-            <button
-              type="button"
-              onClick={() => toggleSection("projects")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
-            >
-              <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
-              <div className="flex items-center gap-2">
-                <ExternalLink className="h-4 w-4 text-gray-400" />
-                {expandedSections.projects ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedSections.projects && (
-              <div className="overflow-hidden">
-                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-4 gap-4 px-4 py-3 text-sm font-medium">
-                  <div>Project Title</div>
-                  <div>Status</div>
-                  <div>Submission Date</div>
-                  <div>Feedback</div>
-                </div>
-                {projectData.map((project, index) => (
-                  <div key={`${project.title}-${project.status}-${index}`} className="grid grid-cols-4 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
-                    <div className="text-gray-900">{project.title}</div>
-                    <div>
-                      <Badge 
-                        className="bg-[var(--primary-100)] text-[color:var(--primary-800)]"
-                      >
-                        {project.status}
-                      </Badge>
-                    </div>
-                    <div className="text-gray-600">{project.submissionDate}</div>
-                    <div className="text-gray-600">{project.feedback}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Exams Section */}
-        <Card className="bg-white">
-          <CardContent className="p-0">
-            <button
-              type="button"
-              onClick={() => toggleSection("exams")}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--primary-50)]"
-            >
-              <h2 className="text-lg font-semibold text-gray-900">Exams</h2>
-              <div className="flex items-center gap-2">
-                <ExternalLink className="h-4 w-4 text-gray-400" />
-                {expandedSections.exams ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedSections.exams && (
-              <div className="overflow-hidden">
-                <div className="bg-[color:var(--primary-500)] text-[color:var(--primary-foreground)] grid grid-cols-5 gap-4 px-4 py-3 text-sm font-medium">
-                  <div>Exam title</div>
-                  <div>Subject</div>
-                  <div>Score</div>
-                  <div>Time Taken</div>
-                  <div>Date</div>
-                </div>
-                {examData.map((exam, index) => (
-                  <div key={`${exam.title}-${exam.subject}-${index}`} className="grid grid-cols-5 gap-4 px-4 py-3 border-b border-[color:var(--primary-100)] text-sm hover:bg-[var(--primary-50)] transition-colors">
-                    <div className="text-gray-900">{exam.title}</div>
-                    <div className="text-gray-600">{exam.subject}</div>
-                    <div className="text-gray-900">{exam.score}%</div>
-                    <div className="text-gray-600">{exam.timeTaken}</div>
-                    <div className="text-gray-600">{exam.date}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

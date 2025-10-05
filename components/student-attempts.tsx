@@ -271,22 +271,6 @@ export function StudentAttempts({ quizTitle, quiz, onBack }: StudentAttemptsProp
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-3 mt-6">
-          <Button 
-            variant="outline"
-            onClick={() => setShowDetails(false)}
-            type="button"
-          >
-            Cancel
-          </Button>
-          <Button 
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-            type="button"
-          >
-            Mark as viewed
-          </Button>
-        </div>
       </div>
     )
   }
