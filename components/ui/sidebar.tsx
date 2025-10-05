@@ -607,7 +607,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
               variant="ghost"
               onClick={() => handleNavigation(item.href)}
               className={cn(
-                "w-full justify-start h-10 text-gray-700 hover:text-gray-900",
+                "w-full justify-start h-10 hover:text-white text-gray-700 cursor-pointer",
                 isCollapsed && "justify-center px-0"
               )}
             >

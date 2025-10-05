@@ -138,7 +138,7 @@ export function ExamHistory({ onViewExam }: ExamHistoryProps) {
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Topic</th>
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Class/Section</th>
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Avg Score</th>
-              <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Attempts</th>
+              <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Assigned</th>
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-600">Action</th>
             </tr>
           </thead>
