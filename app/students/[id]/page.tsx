@@ -227,10 +227,6 @@ export default function StudentDetailPage() {
     [selectedMetric, studentStats]
   );
 
-  const hasChartData = useMemo(
-    () => chartData.some((item) => item.value > 0),
-    [chartData]
-  );
 
   const selectedMetricLabel = metricLabels[selectedMetric];
 
@@ -413,41 +409,35 @@ export default function StudentDetailPage() {
                   </div>
                 </div>
                 <div className="p-6">
-                  {hasChartData ? (
-                    <div className="h-80 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={chartData}
-                          margin={{ top: 16, right: 24, left: 16, bottom: 32 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis
-                            dataKey="subject"
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fontSize: 12, fill: '#6b7280' }}
-                            interval={0}
-                            angle={-15}
-                            textAnchor="end"
-                          />
-                          <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fontSize: 12, fill: '#6b7280' }}
-                          />
-                          <Tooltip
-                            formatter={(value: number) => [value, selectedMetricLabel]}
-                            cursor={{ fill: 'rgba(79, 70, 229, 0.08)' }}
-                          />
-                          <Bar dataKey="value" fill="var(--primary-500)" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  ) : (
-                    <div className="py-12 text-center text-sm text-gray-500">
-                      No analytics available for this metric yet.
-                    </div>
-                  )}
+                  <div className="h-80 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 16, right: 24, left: 16, bottom: 32 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis
+                          dataKey="subject"
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                          interval={0}
+                          angle={-15}
+                          textAnchor="end"
+                        />
+                        <YAxis
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                        />
+                        <Tooltip
+                          formatter={(value: number) => [value, selectedMetricLabel]}
+                          cursor={{ fill: 'rgba(79, 70, 229, 0.08)' }}
+                        />
+                        <Bar dataKey="value" fill="var(--primary-500)" radius={[8, 8, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
             </div>

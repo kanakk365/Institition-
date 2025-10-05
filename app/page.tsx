@@ -1,14 +1,18 @@
-'use client';
-import { useAuth } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { RecentStudents } from "@/components/recent-students"
-import { Users, ClipboardList, FolderOpen, TrendingUp } from "lucide-react"
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import api from '@/lib/api';
-import { useToast } from '@/hooks/use-toast';
-import { ChartBarInteractive, SubjectPerformanceData } from "@/components/ui/barchart"
+"use client";
+import { useAuth } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RecentStudents } from "@/components/recent-students";
+import { Users, ClipboardList, FolderOpen, TrendingUp } from "lucide-react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import api from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import {
+  BarGraphSection,
+  StudentPerformanceData,
+} from "@/components/ui/barchart";
 
 const DEFAULT_INSTITUTION_ID = "cmcx8sm3y0000qe0r6xjq6imo";
 
@@ -50,42 +54,49 @@ interface InstitutionAnalytics {
     totalSections: SummaryMetric;
     totalTeachers: SummaryMetric;
   };
-  performanceBySubject: SubjectPerformanceData[];
+  performanceBySubject: StudentPerformanceData[];
 }
 
 export default function SuperAdminDashboard() {
   const { institution, isAuthenticated } = useAuth();
-  const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
+  const router = useRouter();
+  const [dashboardData, setDashboardData] = useState<DashboardStats | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'GPT' | 'CBSE' | 'CAMBRIDGE'>('GPT');
+  const [mode, setMode] = useState<"GPT" | "CBSE" | "CAMBRIDGE">("GPT");
   const [isSubmittingMode, setIsSubmittingMode] = useState(false);
   const { toast } = useToast();
   const [analytics, setAnalytics] = useState<InstitutionAnalytics | null>(null);
 
   const normalizedBoard = useMemo(
-    () => String(institution?.affiliatedBoard ?? '').trim().toUpperCase(),
+    () =>
+      String(institution?.affiliatedBoard ?? "")
+        .trim()
+        .toUpperCase(),
     [institution?.affiliatedBoard]
   );
 
   const modeOptions = useMemo(() => {
-    const options: Array<{ label: string; value: 'GPT' | 'CBSE' | 'CAMBRIDGE' }> = [
-      { label: 'GPT', value: 'GPT' },
-    ];
+    const options: Array<{
+      label: string;
+      value: "GPT" | "CBSE" | "CAMBRIDGE";
+    }> = [{ label: "GPT", value: "GPT" }];
 
-    if (normalizedBoard === 'CBSE') {
-      options.push({ label: 'CBSE', value: 'CBSE' });
+    if (normalizedBoard === "CBSE") {
+      options.push({ label: "CBSE", value: "CBSE" });
       return options;
     }
 
-    if (normalizedBoard === 'CAMBRIDGE') {
-      options.push({ label: 'CAMBRIDGE', value: 'CAMBRIDGE' });
+    if (normalizedBoard === "CAMBRIDGE") {
+      options.push({ label: "CAMBRIDGE", value: "CAMBRIDGE" });
       return options;
     }
 
     options.push(
-      { label: 'CBSE', value: 'CBSE' },
-      { label: 'CAMBRIDGE', value: 'CAMBRIDGE' },
+      { label: "CBSE", value: "CBSE" },
+      { label: "CAMBRIDGE", value: "CAMBRIDGE" }
     );
 
     return options;
@@ -102,26 +113,29 @@ export default function SuperAdminDashboard() {
       const institutionId = institution?.id || DEFAULT_INSTITUTION_ID;
 
       const [dashboardResult, analyticsResult] = await Promise.allSettled([
-        api.get('/institution-admin/dashboard'),
+        api.get("/institution-admin/dashboard"),
         api.get(`/analytics/institution/${institutionId}`),
       ]);
 
       let dashboardSuccess = false;
-      if (dashboardResult.status === 'fulfilled') {
+      if (dashboardResult.status === "fulfilled") {
         const dashboardResponse = dashboardResult.value;
-        if (dashboardResponse.data?.success && dashboardResponse.data?.data?.stats) {
+        if (
+          dashboardResponse.data?.success &&
+          dashboardResponse.data?.data?.stats
+        ) {
           setDashboardData(dashboardResponse.data.data.stats);
           dashboardSuccess = true;
         } else {
           setDashboardData(null);
         }
       } else {
-        console.error('Dashboard stats fetch failed:', dashboardResult.reason);
+        console.error("Dashboard stats fetch failed:", dashboardResult.reason);
         setDashboardData(null);
       }
 
       let analyticsSuccess = false;
-      if (analyticsResult.status === 'fulfilled') {
+      if (analyticsResult.status === "fulfilled") {
         const analyticsResponse = analyticsResult.value;
         if (analyticsResponse.data?.success && analyticsResponse.data?.data) {
           setAnalytics(analyticsResponse.data.data as InstitutionAnalytics);
@@ -130,12 +144,15 @@ export default function SuperAdminDashboard() {
           setAnalytics(null);
         }
       } else {
-        console.error('Institution analytics fetch failed:', analyticsResult.reason);
+        console.error(
+          "Institution analytics fetch failed:",
+          analyticsResult.reason
+        );
         setAnalytics(null);
       }
 
       if (!dashboardSuccess && !analyticsSuccess) {
-        setError('Error fetching dashboard data');
+        setError("Error fetching dashboard data");
       }
 
       setLoading(false);
@@ -149,14 +166,14 @@ export default function SuperAdminDashboard() {
       return;
     }
 
-    const inferredMode = String(institution.affiliatedBoard || '')
+    const inferredMode = String(institution.affiliatedBoard || "")
       .trim()
       .toUpperCase();
 
     if (
-      inferredMode === 'GPT' ||
-      inferredMode === 'CBSE' ||
-      inferredMode === 'CAMBRIDGE'
+      inferredMode === "GPT" ||
+      inferredMode === "CBSE" ||
+      inferredMode === "CAMBRIDGE"
     ) {
       setMode(inferredMode);
     }
@@ -177,7 +194,7 @@ export default function SuperAdminDashboard() {
 
     try {
       setIsSubmittingMode(true);
-      const response = await api.post('/institution-admin/settings/switch', {
+      const response = await api.post("/institution-admin/settings/switch", {
         mode,
       });
 
@@ -185,7 +202,7 @@ export default function SuperAdminDashboard() {
       const success = Boolean(data?.success);
       const message =
         (data?.message as string | undefined) ??
-        'Curriculum mode updated successfully';
+        "Curriculum mode updated successfully";
 
       if (!success) {
         throw new Error(message);
@@ -193,15 +210,15 @@ export default function SuperAdminDashboard() {
 
       const updatedMode = String(data?.data?.mode || mode).toUpperCase();
       if (
-        updatedMode === 'GPT' ||
-        updatedMode === 'CBSE' ||
-        updatedMode === 'CAMBRIDGE'
+        updatedMode === "GPT" ||
+        updatedMode === "CBSE" ||
+        updatedMode === "CAMBRIDGE"
       ) {
         setMode(updatedMode);
       }
 
       toast({
-        title: 'Success',
+        title: "Success",
         description: `Curriculum mode updated to ${updatedMode}.`,
         duration: 3000,
       });
@@ -209,12 +226,12 @@ export default function SuperAdminDashboard() {
       const fallbackMessage =
         submitError instanceof Error
           ? submitError.message
-          : 'Unable to update curriculum mode.';
+          : "Unable to update curriculum mode.";
 
       toast({
-        title: 'Update failed',
+        title: "Update failed",
         description: fallbackMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } finally {
       setIsSubmittingMode(false);
@@ -229,9 +246,13 @@ export default function SuperAdminDashboard() {
           <div className="mb-8 space-y-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Super Admin Dashboard
+                </h1>
                 {institution && (
-                  <p className="text-gray-600 mt-1">Welcome back, {institution.name}</p>
+                  <p className="text-gray-600 mt-1">
+                    Welcome back, {institution.name}
+                  </p>
                 )}
               </div>
               <form
@@ -250,8 +271,8 @@ export default function SuperAdminDashboard() {
                           key={option.value}
                           className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                             isSelected
-                              ? 'border-red-500 bg-red-50 text-red-700'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-red-300'
+                              ? "border-red-500 bg-red-50 text-red-700"
+                              : "border-gray-200 bg-white text-gray-700 hover:border-red-300"
                           }`}
                         >
                           <input
@@ -273,7 +294,7 @@ export default function SuperAdminDashboard() {
                     disabled={isSubmittingMode}
                     className="whitespace-nowrap"
                   >
-                    {isSubmittingMode ? 'Updating…' : 'Update mode'}
+                    {isSubmittingMode ? "Updating…" : "Update mode"}
                   </Button>
                 </fieldset>
               </form>
@@ -299,32 +320,46 @@ export default function SuperAdminDashboard() {
             <>
               {/* Summary Metrics */}
               {analytics && (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                  {[{
-                    key: "totalStudents" as const,
-                    title: "Total Students",
-                    icon: <Users className="h-6 w-6 text-purple-600" />,
-                    iconBg: "bg-purple-100",
-                  }, {
-                    key: "totalGrades" as const,
-                    title: "Total Grades",
-                    icon: <ClipboardList className="h-6 w-6 text-[color:var(--primary-600)]" />,
-                    iconBg: "bg-[var(--primary-50)]",
-                  }, {
-                    key: "totalSections" as const,
-                    title: "Total Sections",
-                    icon: <FolderOpen className="h-6 w-6 text-[color:var(--primary-600)]" />,
-                    iconBg: "bg-[var(--primary-50)]",
-                  }, {
-                    key: "totalTeachers" as const,
-                    title: "Total Teachers",
-                    icon: <TrendingUp className="h-6 w-6 text-blue-600" />,
-                    iconBg: "bg-blue-100",
-                  }].map(({ key, title, icon, iconBg }) => {
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
+                  {[
+                    {
+                      key: "totalStudents" as const,
+                      title: "Total Students",
+                      icon: <Users className="h-6 w-6 text-purple-600" />,
+                      iconBg: "bg-purple-100",
+                    },
+                    {
+                      key: "totalGrades" as const,
+                      title: "Total Grades",
+                      icon: (
+                        <ClipboardList className="h-6 w-6 text-[color:var(--primary-600)]" />
+                      ),
+                      iconBg: "bg-[var(--primary-50)]",
+                    },
+                    {
+                      key: "totalTeachers" as const,
+                      title: "Total Teachers",
+                      icon: <TrendingUp className="h-6 w-6 text-blue-600" />,
+                      iconBg: "bg-blue-100",
+                    },
+                  ].map(({ key, title, icon, iconBg }) => {
                     const metric = analytics.summary[key];
                     const isPositive = metric.changeFromLastMonth >= 0;
+
+                    const handleCardClick = () => {
+                      if (key === "totalStudents") {
+                        router.push("/students");
+                      } else if (key === "totalGrades") {
+                        router.push("/classes");
+                      }
+                    };
+
                     return (
-                      <Card key={key} className="bg-white border-0 shadow-sm">
+                      <Card
+                        key={key}
+                        className={`bg-white border-0 shadow-sm ${key === "totalStudents" || key === "totalGrades" ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+                        onClick={handleCardClick}
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
@@ -332,11 +367,12 @@ export default function SuperAdminDashboard() {
                                 {icon}
                               </div>
                               <div>
-                                <p className="text-2xl font-bold text-gray-900">{metric.count.toLocaleString()}</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                  {metric.count.toLocaleString()}
+                                </p>
                                 <p className="text-sm text-gray-600">{title}</p>
                               </div>
                             </div>
-                            
                           </div>
                         </CardContent>
                       </Card>
@@ -345,11 +381,11 @@ export default function SuperAdminDashboard() {
                 </div>
               )}
 
-              
-
               {/* Performance by Subject */}
               {analytics?.performanceBySubject?.length ? (
-                <ChartBarInteractive performanceData={analytics.performanceBySubject} />
+                <BarGraphSection
+                  performanceData={analytics.performanceBySubject}
+                />
               ) : null}
 
               {/* Recently Added Students */}
@@ -358,15 +394,22 @@ export default function SuperAdminDashboard() {
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-semibold text-gray-900">
-                        Recently added students ({dashboardData.recentStudents.timeframe})
+                        Recently added students (
+                        {dashboardData.recentStudents.timeframe})
                       </CardTitle>
-                      <Button variant="ghost" size="sm" className="text-gray-500">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500"
+                      >
                         See All
                       </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <RecentStudents students={dashboardData.recentStudents.students} />
+                    <RecentStudents
+                      students={dashboardData.recentStudents.students}
+                    />
                   </CardContent>
                 </Card>
               )}
@@ -375,5 +418,5 @@ export default function SuperAdminDashboard() {
         </div>
       </div>
     </ProtectedRoute>
-  )
+  );
 }

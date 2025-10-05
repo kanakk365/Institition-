@@ -269,13 +269,13 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
         <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-3">
           <div
             className={cn(
-              "flex items-center w-full min-w-0",
+              "flex flex-col items-center w-full min-w-0",
               isCollapsed ? "justify-center" : "gap-3"
             )}
           >
             <div
               className={cn(
-                "relative overflow-hidden rounded-md bg-gray-100 flex items-center justify-center",
+                "relative overflow-hidden rounded-md bg-gray-100 flex flex-col items-center justify-center",
                 isCollapsed ? "h-10 w-10" : "h-12 w-12"
               )}
             >
@@ -288,16 +288,16 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className="object-contain"
                 />
               ) : (
-                <span className="text-sm font-semibold text-gray-600">
+                <span className="text-xs font-semibold text-gray-600">
                   {institution?.name?.charAt(0)?.toUpperCase() || "I"}
                 </span>
               )}
             </div>
 
             {!isCollapsed && (
-              <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+              <div className=" px-3 flex flex-1 flex-col overflow-hidden min-w-0">
                 <p
-                  className="text-base font-semibold text-gray-900 truncate"
+                  className="text-sm font-semibold text-gray-900 break-words leading-tight"
                   title={institution?.name || undefined}
                 >
                   {institution?.name || "Institution"}
