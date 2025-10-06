@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ExamView } from "@/components/exam-view"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
 import api from "@/lib/api"
 
 interface Student {
@@ -57,6 +58,7 @@ interface StoredQuizFormData {
     difficulty: string
     [key: string]: unknown
   }
+  description: string
   classSection: {
     standardId: string
     sectionId: string
@@ -68,6 +70,7 @@ interface StoredQuizFormData {
 
 export default function CustomQuizConfirmationPage() {
   const router = useRouter()
+  const { institution } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -115,8 +118,8 @@ export default function CustomQuizConfirmationPage() {
   }, [router])
 
   const handleAssignQuiz = async () => {
-    if (!createdQuiz || selectedStudents.length === 0) {
-      setError('Missing quiz data or no students selected')
+    if (!createdQuiz || selectedStudents.length === 0 || !institution) {
+      setError('Missing quiz data, no students selected, or institution information')
       return
     }
 
@@ -124,7 +127,7 @@ export default function CustomQuizConfirmationPage() {
     setError('')
 
     try {
-      // STEP 1: First create the quiz
+      // Get the quiz form data to create the quiz first
       const formData = sessionStorage.getItem('quizFormData')
       if (!formData) {
         setError('Form data not found')
@@ -136,10 +139,11 @@ export default function CustomQuizConfirmationPage() {
 
       const sanitizedQuizPayload = {
         quizDetails: quizFormData.quizDetails,
-        classSection: quizFormData.classSection,
+        description: "",
         questions: Array.isArray(quizFormData.questions)
           ? quizFormData.questions.map((question) => ({
               questionText: question.questionText,
+              bloomTaxanomy: question.bloomTaxonomy,
               options: Array.isArray(question.options)
                 ? question.options.map((option) => ({
                     optionText: option.optionText,
@@ -152,8 +156,9 @@ export default function CustomQuizConfirmationPage() {
 
       console.log('Sanitized quiz payload:', sanitizedQuizPayload)
 
+      // Create the quiz first
       const createResponse = await api.post('/institution-admin/custom-quizzes/create', sanitizedQuizPayload)
-      
+
       if (!createResponse.data.success) {
         setError(createResponse.data.message || 'Failed to create quiz')
         return
@@ -162,25 +167,25 @@ export default function CustomQuizConfirmationPage() {
       const createdQuizData = createResponse.data.data
       console.log('Created quiz response:', createdQuizData)
 
-      // STEP 2: Now assign the created quiz to students
+      // Now assign the created quiz to students using the new endpoint
       const assignmentData = {
         quizId: createdQuizData.quizId,
         studentIds: selectedStudents.map(student => student.id),
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
+        institutionId: institution.id
       }
 
       console.log('Assigning quiz with data:', assignmentData)
 
-      const assignResponse = await api.post('/institution-admin/quizzes/assign', assignmentData)
-      
+      const assignResponse = await api.post('/institution-admin/custom-quizzes/assign', assignmentData)
+
       if (assignResponse.data.success) {
-        setSuccess(`Quiz created and assigned successfully to ${assignResponse.data.data.assignedStudentsCount} students`)
-        
+        setSuccess(`Quiz created and assigned successfully to ${assignResponse.data.data.assignedStudentsCount || selectedStudents.length} students`)
+
         // Clear sessionStorage
         sessionStorage.removeItem('customQuizSelectedStudents')
         sessionStorage.removeItem('customQuizGradeAndSection')
         sessionStorage.removeItem('quizFormData')
-        
+
         // Redirect to main page after success
         setTimeout(() => {
           router.push('/custom-quiz')

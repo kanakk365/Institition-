@@ -33,6 +33,7 @@ interface QuizData {
     instructions: string;
     difficulty: string;
   };
+  description: string;
   classSection: {
     standardId: string;
     sectionId: string;
@@ -65,6 +66,7 @@ export default function CustomQuizFormPage() {
       instructions: "",
       difficulty: "MEDIUM",
     },
+    description: "",
     classSection: { standardId: "", sectionId: "" },
     questions: [],
   });
@@ -88,6 +90,13 @@ export default function CustomQuizFormPage() {
     setData((prev) => ({
       ...prev,
       quizDetails: { ...prev.quizDetails, [field]: value },
+    }));
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setData((prev) => ({
+      ...prev,
+      description: value,
     }));
   };
 
@@ -248,6 +257,17 @@ export default function CustomQuizFormPage() {
               />
             </div>
 
+            <div>
+              <label htmlFor="quiz-description" className="block text-sm font-medium text-gray-700 mb-2">Note</label>
+              <Textarea
+                id="quiz-description"
+                placeholder="Add any additional notes or description..."
+                value={data.description}
+                onChange={(e) => handleDescriptionChange(e.target.value)}
+                rows={3}
+              />
+            </div>
+
             {/* Questions Section */}
             <div className="border-t pt-6">
               <div className="flex items-center justify-between mb-4">
@@ -268,7 +288,7 @@ export default function CustomQuizFormPage() {
                     const questionMarksId = `question-${question.id}-marks`;
 
                     return (
-                      <div key={question.id} className="border rounded-lg p-4 bg-gray-50 relative overflow-visible">
+                      <div key={question.id} className=" shadow-md rounded-lg p-4 bg-gray-50 relative overflow-visible">
                         <div className="flex items-center justify-between mb-4">
                           <h4 className="font-medium">Question {index + 1}</h4>
                           <Button
@@ -276,7 +296,7 @@ export default function CustomQuizFormPage() {
                             onClick={() => removeQuestion(question.id)}
                             variant="outline"
                             size="sm"
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 "
                           >
                             Remove
                           </Button>
@@ -364,9 +384,9 @@ export default function CustomQuizFormPage() {
 
             <div className="flex items-center gap-4 pt-6">
               <Button onClick={() => router.back()} variant="outline">Cancel</Button>
-              <Button 
+              <Button
                 onClick={handleSubmit}
-                className="bg-green-500 hover:bg-green-600 text-white"
+                className="button-primary"
                 disabled={loading || !data.quizDetails.title}
               >
                 {loading ? "Creating..." : "Create Custom Quiz"}

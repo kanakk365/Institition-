@@ -83,7 +83,7 @@ export default function CustomQuizGradePage() {
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[color:var(--primary-500)] mx-auto mb-4"></div>
                 <p className="text-gray-600 text-lg">Loading grades...</p>
               </div>
             </div>
