@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BarGraphSection } from "@/components/ui/barchart"
+import { BarGraphSection, StudentPerformanceData } from "@/components/ui/barchart"
 import { useAuth } from "@/contexts/AuthContext"
 import api from '@/lib/api'
 
@@ -103,13 +103,6 @@ export default function ClassDetailsPage() {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [expandedSections, setExpandedSections] = useState({
-    students: true,
-    quizzes: false,
-    projects: false,
-    exams: false,
-    analytics: false,
-  })
   const [selectedSection, setSelectedSection] = useState<string>("")
 
   useEffect(() => {
@@ -163,27 +156,21 @@ export default function ClassDetailsPage() {
     }
   }, [standardId])
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }))
-  }
 
   const handleFilterChange = (filters: { section?: string }) => {
     setSelectedSection(filters.section || "")
   }
 
   // Get filtered data based on selections
-  const getFilteredPerformanceData = () => {
-    if (!analyticsData) return null
+  const getFilteredPerformanceData = (): StudentPerformanceData[] | undefined => {
+    if (!analyticsData) return undefined
 
     if (selectedSection && selectedSection !== 'all-sections') {
       // Filter by section within this grade
       const sectionData = analyticsData.performanceBySubjectByGradeSection.find(
         item => item.sectionId === selectedSection && item.gradeId === standardId
       )
-      return sectionData?.subjects || null
+      return sectionData?.subjects
     } else {
       // Return performance data for this grade
       const currentGradeData = analyticsData.performanceBySubjectByGrade.find(
@@ -193,9 +180,9 @@ export default function ClassDetailsPage() {
       if (currentGradeData) {
         return currentGradeData.subjects
       } else {
-        // Grade not found in response - return null to indicate no data available
+        // Grade not found in response - return undefined to indicate no data available
         console.warn(`Grade ${standardId} not found in analytics response`)
-        return null
+        return undefined
       }
     }
   }
@@ -218,7 +205,7 @@ export default function ClassDetailsPage() {
   )
 
   // Check if we have data for the current grade
-  const hasGradeData = currentGradeData && getFilteredPerformanceData() !== null
+  const hasGradeData = currentGradeData && getFilteredPerformanceData() !== undefined
 
   if (loading) {
     return (
@@ -254,10 +241,7 @@ export default function ClassDetailsPage() {
 
         {/* Analytics Section */}
         <div className="bg-white rounded-lg border border-gray-200 mb-6">
-          <button
-            onClick={() => toggleSection('analytics')}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50"
-          >
+          <div className="p-4 border-b border-gray-200">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-medium">Performance Analytics</h2>
               {!hasGradeData && (
@@ -266,74 +250,47 @@ export default function ClassDetailsPage() {
                 </span>
               )}
             </div>
-            {expandedSections.analytics ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-          </button>
+          </div>
 
-          {expandedSections.analytics && (
-            <div className="px-4 pb-4 border-t border-gray-100">
-              <div className="mb-4 flex gap-4">
-                {availableSections.length > 0 ? (
-                  <Select value={selectedSection} onValueChange={setSelectedSection}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Select Section" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all-sections">All Sections</SelectItem>
-                      {availableSections.map(section => (
-                        <SelectItem key={section.id} value={section.id}>{section.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="text-sm text-gray-500 italic">
-                    No sections available for this grade
-                  </div>
-                )}
-              </div>
-
-              {getFilteredPerformanceData() ? (
-                <BarGraphSection
-                  performanceData={getFilteredPerformanceData()}
-                  sections={availableSections}
-                  onFilterChange={handleFilterChange}
-                />
+          <div className="p-4">
+            <div className="mb-4 flex gap-4">
+              {availableSections.length > 0 ? (
+                <Select value={selectedSection} onValueChange={setSelectedSection}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select Section" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all-sections">All Sections</SelectItem>
+                    {availableSections.map(section => (
+                      <SelectItem key={section.id} value={section.id}>{section.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : (
-                <div className="text-center py-8">
-                  <div className="text-gray-400 text-4xl mb-4">📊</div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Available</h3>
-                  <p className="text-gray-600">
-                    Performance data for this grade is not available yet. Analytics data will appear once students start taking quizzes and exams.
-                  </p>
+                <div className="text-sm text-gray-500 italic">
+                  No sections available for this grade
                 </div>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Other sections would go here */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-          <div className="mb-4">
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Additional Features</h2>
-            <p className="text-gray-600">
-              Students, Quizzes, Projects, and Exams sections will be implemented here
-            </p>
+            {getFilteredPerformanceData() ? (
+              <BarGraphSection
+                performanceData={getFilteredPerformanceData()}
+                sections={availableSections}
+                onFilterChange={handleFilterChange}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-400 text-4xl mb-4">📊</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Analytics Data Available</h3>
+                <p className="text-gray-600">
+                  Performance data for this grade is not available yet. Analytics data will appear once students start taking quizzes and exams.
+                </p>
+              </div>
+            )}
           </div>
         </div>
+
       </div>
     </div>
   )
