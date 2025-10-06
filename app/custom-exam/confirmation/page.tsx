@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ExamView } from "@/components/exam-view"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
 import api from "@/lib/api"
 
 interface Student {
@@ -44,6 +45,7 @@ interface CreatedExam {
 
 export default function CustomExamConfirmationPage() {
   const router = useRouter()
+  const { institution } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -109,7 +111,30 @@ export default function CustomExamConfirmationPage() {
       const examFormData = JSON.parse(formData)
       console.log('Creating exam with data:', examFormData)
 
-      const createResponse = await api.post('/institution-admin/custom-exams/create', examFormData)
+      // Transform data to match new API format
+      const transformedPayload = {
+        examDetails: examFormData.examDetails,
+        description: examFormData.description || "",
+        questions: examFormData.questions.map((question: any) => ({
+          questionText: question.questionText,
+          questionType: question.questionType,
+          marks: question.marks,
+          bloomTaxanomy: question.bloomTaxonomy,
+          ...(question.questionType === 'MCQ' && question.options ? {
+            options: question.options.map((option: any) => ({
+              optionText: option.optionText,
+              isCorrect: option.isCorrect,
+            }))
+          } : {}),
+          ...(question.questionType !== 'MCQ' && question.correctAnswer ? {
+            correctAnswer: question.correctAnswer
+          } : {})
+        }))
+      }
+
+      console.log('Transformed payload:', transformedPayload)
+
+      const createResponse = await api.post('/institution-admin/custom-exams/create', transformedPayload)
       
       if (!createResponse.data.success) {
         setError(createResponse.data.message || 'Failed to create exam')
@@ -120,18 +145,23 @@ export default function CustomExamConfirmationPage() {
       console.log('Created exam response:', createdExamData)
 
       // STEP 2: Now assign the created exam to students
+      if (!institution?.id) {
+        setError('Institution information not available')
+        return
+      }
+
       const assignmentData = {
         examId: createdExamData.examId,
-        studentIds: selectedStudents.map(student => student.id)
-        // No dueDate for exam assignment
+        studentIds: selectedStudents.map(student => student.id),
+        institutionId: institution.id
       }
 
       console.log('Assigning exam with data:', assignmentData)
 
-      const assignResponse = await api.post('/teacher/student/assign-exam', assignmentData)
+      const assignResponse = await api.post('/institution-admin/custom-exams/assign', assignmentData)
       
       if (assignResponse.data.success) {
-        setSuccess(`Exam created and assigned successfully to ${assignResponse.data.data.assignedStudentsCount} students`)
+        setSuccess(`Exam created and assigned successfully to ${assignResponse.data.data.assignedCount} students`)
         
         // Clear sessionStorage
         sessionStorage.removeItem('customExamSelectedStudents')

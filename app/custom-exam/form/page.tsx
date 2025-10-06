@@ -18,6 +18,7 @@ interface ExamData {
     timeLimitMinutes: number
     instructions: string
   }
+  description: string
   classSection: {
     standardId: string
     sectionId: string
@@ -38,6 +39,7 @@ export default function CustomExamFormPage() {
   const router = useRouter()
   const [data, setData] = useState<ExamData>({
     examDetails: { title: '', subject: '', topic: '', timeLimitMinutes: 60, instructions: '' },
+    description: '',
     classSection: { standardId: '', sectionId: '' },
     questions: [],
   })
@@ -62,6 +64,13 @@ export default function CustomExamFormPage() {
     setData(prev => ({
       ...prev,
       examDetails: { ...prev.examDetails, [field]: value }
+    }))
+  }
+
+  const handleDescriptionChange = (value: string) => {
+    setData(prev => ({
+      ...prev,
+      description: value
     }))
   }
 
@@ -210,10 +219,20 @@ export default function CustomExamFormPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Instructions</label>
-              <Textarea 
-                placeholder="Please read all questions carefully..." 
-                value={data.examDetails.instructions} 
-                onChange={(e) => handleInputChange('instructions', e.target.value)} 
+              <Textarea
+                placeholder="Please read all questions carefully..."
+                value={data.examDetails.instructions}
+                onChange={(e) => handleInputChange('instructions', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <Textarea
+                placeholder="Add any additional notes or description..."
+                value={data.description}
+                onChange={(e) => handleDescriptionChange(e.target.value)}
+                rows={3}
               />
             </div>
 
@@ -370,9 +389,9 @@ export default function CustomExamFormPage() {
 
             <div className="flex items-center gap-4 pt-6">
               <Button onClick={() => router.back()} variant="outline">Cancel</Button>
-              <Button 
-                onClick={handleSubmit} 
-                className="bg-green-500 hover:bg-green-600 text-white" 
+              <Button
+                onClick={handleSubmit}
+                className="button-primary"
                 disabled={loading || !data.examDetails.title}
               >
                 {loading ? 'Creating...' : 'Create Custom Exam'}
@@ -380,7 +399,7 @@ export default function CustomExamFormPage() {
             </div>
 
             {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+              <div className="bg-[var(--primary-50)] border border-[var(--primary-200)] text-[var(--primary-800)] px-4 py-3 rounded-lg">
                 {success}
               </div>
             )}

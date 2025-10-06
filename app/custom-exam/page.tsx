@@ -1,6 +1,7 @@
 "use client"
 
-import { CustomExamHistory } from "@/components/custom-exam-history"
+import { useState } from "react"
+import { CustomExamHistory, CustomExamAttempts } from "@/components/custom-exam-history"
 
 interface CustomExam {
   id: string
@@ -26,16 +27,47 @@ interface CustomExam {
 }
 
 export default function CustomExamPage() {
+  const [currentView, setCurrentView] = useState("exam-history")
+  const [selectedExam, setSelectedExam] = useState<CustomExam | null>(null)
+  const [selectedExamId, setSelectedExamId] = useState<string | null>(null)
+
   const handleViewExam = (exam: CustomExam) => {
-    // Navigate to exam details or implement view logic
-    console.log("Viewing exam:", exam)
-    // You can implement navigation to exam details page here
+    setSelectedExam(exam)
+    setSelectedExamId(exam.id)
+    setCurrentView("exam-details")
+  }
+
+  const handleViewExamById = (examId: string) => {
+    setSelectedExamId(examId)
+    setCurrentView("exam-details")
+  }
+
+  const handleBack = () => {
+    setCurrentView("exam-history")
+    setSelectedExam(null)
+    setSelectedExamId(null)
+  }
+
+  const renderContent = () => {
+    switch (currentView) {
+      case "exam-details":
+        return (
+          <CustomExamAttempts
+            examId={selectedExamId || selectedExam?.id || ""}
+            examTitle={selectedExam?.title}
+            onBack={handleBack}
+          />
+        )
+      case "exam-history":
+      default:
+        return <CustomExamHistory onViewExam={handleViewExam} onViewExamById={handleViewExamById} />
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <CustomExamHistory onViewExam={handleViewExam} />
+        {renderContent()}
       </div>
     </div>
   )

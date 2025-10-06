@@ -1,6 +1,7 @@
 "use client"
 
-import { CustomQuizHistory } from "@/components/custom-quiz-history"
+import { useState } from "react"
+import { CustomQuizHistory, CustomQuizAttempts } from "@/components/custom-quiz-history"
 
 interface CustomQuiz {
   id: string
@@ -23,16 +24,47 @@ interface CustomQuiz {
 }
 
 export default function CustomQuizPage() {
+  const [currentView, setCurrentView] = useState("quiz-history")
+  const [selectedQuiz, setSelectedQuiz] = useState<CustomQuiz | null>(null)
+  const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null)
+
   const handleViewQuiz = (quiz: CustomQuiz) => {
-    // Navigate to quiz details or implement view logic
-    console.log("Viewing quiz:", quiz)
-    // You can implement navigation to quiz details page here
+    setSelectedQuiz(quiz)
+    setSelectedQuizId(quiz.id)
+    setCurrentView("quiz-details")
+  }
+
+  const handleViewQuizById = (quizId: string) => {
+    setSelectedQuizId(quizId)
+    setCurrentView("quiz-details")
+  }
+
+  const handleBack = () => {
+    setCurrentView("quiz-history")
+    setSelectedQuiz(null)
+    setSelectedQuizId(null)
+  }
+
+  const renderContent = () => {
+    switch (currentView) {
+      case "quiz-details":
+        return (
+          <CustomQuizAttempts
+            quizId={selectedQuizId || selectedQuiz?.id || ""}
+            quizTitle={selectedQuiz?.title}
+            onBack={handleBack}
+          />
+        )
+      case "quiz-history":
+      default:
+        return <CustomQuizHistory onViewQuiz={handleViewQuiz} onViewQuizById={handleViewQuizById} />
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <CustomQuizHistory onViewQuiz={handleViewQuiz} />
+        {renderContent()}
       </div>
     </div>
   )
