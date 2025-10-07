@@ -336,8 +336,8 @@ export default function QuizFormPage() {
             </button>
             <h1 className="text-3xl font-bold text-gray-800">Assign Quiz to Student</h1>
           </div>
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-            <p className="text-blue-700 font-medium">
+          <div className="bg-[var(--primary-50)] border-l-4 border-[var(--primary-400)] p-4 rounded-lg">
+            <p className="text-[var(--primary-700)] font-medium">
               Creating quiz for Grade {standardName}, Section {sectionName} - {selectedStudents.length} students selected
             </p>
           </div>
@@ -361,10 +361,10 @@ export default function QuizFormPage() {
                 <label htmlFor="topic" className="block text-sm font-medium text-gray-700">Topic</label>
                 <Input
                   id="topic"
-                  placeholder="Fractions, Photosynthesis"
+                  placeholder="Enter a topic"
                   value={formData.topic}
                   onChange={(e) => handleInputChange('topic', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-gray-500"
                 />
               </div>
               <div className="space-y-2">
@@ -429,13 +429,24 @@ export default function QuizFormPage() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="questions" className="block text-sm font-medium text-gray-700">No. of Questions</label>
-                <Input
-                  id="questions"
-                  placeholder="3 - 10"
-                  value={formData.questionCount}
-                  onChange={(e) => handleInputChange('questionCount', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
-                />
+                <Select
+                  value={formData.questionCount || undefined}
+                  onValueChange={(value) => handleInputChange('questionCount', value)}
+                >
+                  <SelectTrigger id="questions" className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]">
+                    <SelectValue placeholder="Select number of questions" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                    <SelectItem value="3">3 questions</SelectItem>
+                    <SelectItem value="4">4 questions</SelectItem>
+                    <SelectItem value="5">5 questions</SelectItem>
+                    <SelectItem value="6">6 questions</SelectItem>
+                    <SelectItem value="7">7 questions</SelectItem>
+                    <SelectItem value="8">8 questions</SelectItem>
+                    <SelectItem value="9">9 questions</SelectItem>
+                    <SelectItem value="10">10 questions</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -445,21 +456,33 @@ export default function QuizFormPage() {
                 <label htmlFor="due-date" className="block text-sm font-medium text-gray-700">Due Date</label>
                 <Input
                   id="due-date"
-                  placeholder="e.g., 27 June 2025"
+                  type="date"
                   value={formData.dueDate}
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
+                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]"
                 />
               </div>
               <div className="space-y-2">
                 <label htmlFor="time-limit" className="block text-sm font-medium text-gray-700">Time Limit</label>
-                <Input
-                  id="time-limit"
-                  placeholder="5, 10, 15 minutes"
-                  value={formData.timeLimit}
-                  onChange={(e) => handleInputChange('timeLimit', e.target.value)}
-                  className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-[color:var(--primary-500)]"
-                />
+                <Select
+                  value={formData.timeLimit || undefined}
+                  onValueChange={(value) => handleInputChange('timeLimit', value)}
+                >
+                  <SelectTrigger id="time-limit" className="h-10 w-full border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)]">
+                    <SelectValue placeholder="Select time limit" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
+                    <SelectItem value="5">5 minutes</SelectItem>
+                    <SelectItem value="10">10 minutes</SelectItem>
+                    <SelectItem value="15">15 minutes</SelectItem>
+                    <SelectItem value="20">20 minutes</SelectItem>
+                    <SelectItem value="25">25 minutes</SelectItem>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="45">45 minutes</SelectItem>
+                    <SelectItem value="60">60 minutes</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
