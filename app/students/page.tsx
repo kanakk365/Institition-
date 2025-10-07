@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ChevronDown, Plus, Search, Loader2 } from "lucide-react"
+import { ChevronDown, Plus, Search, Loader2, Eye, EyeOff } from "lucide-react"
 import { Sidebar } from "@/components/ui/sidebar"
 import api from "@/lib/api"
 
@@ -19,6 +19,7 @@ interface Student {
   dob: string
   gender: string
   phone: string
+  password: string
   photoUrl?: string
   isActive: boolean
   isVerified: boolean
@@ -98,6 +99,17 @@ export default function StudentDashboard() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const limit = 10
+
+  // Password visibility state
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({})
+
+  // Toggle password visibility for a specific student
+  const togglePasswordVisibility = (studentId: string) => {
+    setVisiblePasswords(prev => ({
+      ...prev,
+      [studentId]: !prev[studentId]
+    }))
+  }
 
   // Fetch all standards with their sections from API
   const fetchStandardsWithSections = useCallback(async () => {
@@ -402,6 +414,7 @@ export default function StudentDashboard() {
                       <TableHead className="font-medium text-gray-700 py-4 px-6">Class</TableHead>
                       <TableHead className="font-medium text-gray-700 py-4 px-6">Email ID</TableHead>
                       <TableHead className="font-medium text-gray-700 py-4 px-6">Phone Number</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-4 px-6">Password</TableHead>
                       <TableHead className="font-medium text-gray-700 py-4 px-6">Status</TableHead>
                       <TableHead className="font-medium text-gray-700 py-4 px-6">Action</TableHead>
                     </TableRow>
@@ -415,6 +428,25 @@ export default function StudentDashboard() {
                         <TableCell className="py-4 px-6 text-gray-600">{student.standard?.name || 'No Class'}</TableCell>
                         <TableCell className="py-4 px-6 text-gray-600">{student.email}</TableCell>
                         <TableCell className="py-4 px-6 text-gray-600">{student.phone}</TableCell>
+                        <TableCell className="py-4 px-6">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-mono text-sm ${visiblePasswords[student.id] ? 'text-gray-900' : 'text-gray-400'}`}>
+                              {visiblePasswords[student.id] ? student.password : '••••••••'}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => togglePasswordVisibility(student.id)}
+                              className="h-6 w-6 p-0 hover:bg-gray-100"
+                            >
+                              {visiblePasswords[student.id] ? (
+                                <EyeOff className="h-4 w-4 text-gray-500" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-gray-500" />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
                         <TableCell className="py-4 px-6">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--primary-100)] text-[color:var(--primary-800)]">
                             {student.isActive ? 'Active' : 'Inactive'}

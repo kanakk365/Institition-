@@ -555,81 +555,128 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
               {/* Exam Sub-navigation */}
               {item.label === "Exams" && isExamsExpanded && !isCollapsed && (
                 <div className="ml-4 mt-1 space-y-1">
-                  {examSubNavigation.map((subItem) => (
-                    <Link
-                      key={subItem.name}
-                      href={subItem.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
-                      )}
-                      style={
-                        pathname === subItem.href
-                          ? {
-                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
-                            }
-                          : undefined
-                      }
-                    >
-                      <subItem.icon className="w-4 h-4" />
-                      {subItem.name}
-                    </Link>
-                  ))}
+                  {examSubNavigation.map((subItem) => {
+                    const isCreateExamActive = subItem.name === "Create Exam" &&
+                      (pathname === subItem.href ||
+                       pathname === "/exams/create/section" ||
+                       pathname === "/exams/create/students" ||
+                       pathname === "/exams/create/assign");
+
+                    return (
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                          isCreateExamActive
+                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                        )}
+                        style={
+                          isCreateExamActive
+                            ? {
+                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                              }
+                            : pathname === subItem.href
+                              ? {
+                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                }
+                              : undefined
+                        }
+                      >
+                        <subItem.icon className="w-4 h-4" />
+                        {subItem.name}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
 
               {/* Custom Exam Sub-navigation */}
               {item.label === "Custom Exam" && isCustomExamsExpanded && !isCollapsed && (
                 <div className="ml-4 mt-1 space-y-1">
-                  {customExamSubNavigation.map((subItem) => (
-                    <Link
-                      key={subItem.name}
-                      href={subItem.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
-                      )}
-                      style={
-                        pathname === subItem.href
-                          ? {
-                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
-                            }
-                          : undefined
-                      }
-                    >
-                      <subItem.icon className="w-4 h-4" />
-                      {subItem.name}
-                    </Link>
-                  ))}
+                  {customExamSubNavigation.map((subItem) => {
+                    const isCreateCustomExamActive = subItem.name === "Create Custom Exam" &&
+                      (pathname === subItem.href ||
+                       pathname === "/custom-exam/section" ||
+                       pathname === "/custom-exam/students" ||
+                       pathname === "/custom-exam/form" ||
+                       pathname === "/custom-exam/assign");
+
+                    return (
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                          isCreateCustomExamActive
+                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                        )}
+                        style={
+                          isCreateCustomExamActive
+                            ? {
+                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                              }
+                            : pathname === subItem.href
+                              ? {
+                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                }
+                              : undefined
+                        }
+                      >
+                        <subItem.icon className="w-4 h-4" />
+                        {subItem.name}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
 
               {/* Custom Quiz Sub-navigation */}
               {item.label === "Custom Quiz" && isCustomQuizzesExpanded && !isCollapsed && (
                 <div className="ml-4 mt-1 space-y-1">
-                  {customQuizSubNavigation.map((subItem) => (
-                    <Link
-                      key={subItem.name}
-                      href={subItem.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
-                      )}
-                      style={
-                        pathname === subItem.href
-                          ? {
-                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
-                            }
-                          : undefined
-                      }
-                    >
-                      <subItem.icon className="w-4 h-4" />
-                      {subItem.name}
-                    </Link>
-                  ))}
+                  {customQuizSubNavigation.map((subItem) => {
+                    const isCreateCustomQuizActive = subItem.name === "Create Custom Quiz" &&
+                      (pathname === subItem.href ||
+                       pathname === "/custom-quiz/section" ||
+                       pathname === "/custom-quiz/students" ||
+                       pathname === "/custom-quiz/form" ||
+                       pathname === "/custom-quiz/assign");
+
+                    return (
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                          isCreateCustomQuizActive
+                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                        )}
+                        style={
+                          isCreateCustomQuizActive
+                            ? {
+                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                              }
+                            : pathname === subItem.href
+                              ? {
+                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                }
+                              : undefined
+                        }
+                      >
+                        <subItem.icon className="w-4 h-4" />
+                        {subItem.name}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>

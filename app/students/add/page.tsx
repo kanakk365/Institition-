@@ -52,6 +52,7 @@ export default function AddStudentPage() {
     firstName: '',
     lastName: '',
     email: '',
+    password: '',
     gender: 'Male' as 'Male' | 'Female' | 'Other',
     dob: '',
     contactNumber: '',
@@ -155,7 +156,7 @@ export default function AddStudentPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.gradeClass || !formData.section) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.gradeClass || !formData.section) {
       setError('Please fill in all required fields');
       return;
     }
@@ -187,10 +188,11 @@ export default function AddStudentPage() {
       formDataToSend.append('firstName', firstName);
       formDataToSend.append('lastName', lastName);
       formDataToSend.append('email', formData.email.trim());
+      formDataToSend.append('password', formData.password.trim());
       formDataToSend.append('dob', formData.dob);
       formDataToSend.append('gender', formData.gender.toUpperCase());
       formDataToSend.append('phone', formData.contactNumber);
-      
+
       // Use actual standard and section IDs
       formDataToSend.append('standardId', selectedStandard.id);
       formDataToSend.append('sectionId', selectedSection.id);
@@ -289,7 +291,7 @@ export default function AddStudentPage() {
               </div>
             </div>
 
-            {/* Second Row: Email and Gender */}
+            {/* Second Row: Email and Password */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -305,6 +307,24 @@ export default function AddStudentPage() {
                   required
                 />
               </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Third Row: Gender and Contact Number */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
@@ -328,9 +348,22 @@ export default function AddStudentPage() {
                   </div>
                 </div>
               </div>
+              <div>
+                <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                  Contact Number
+                </label>
+                <input
+                  id="contactNumber"
+                  type="tel"
+                  value={formData.contactNumber}
+                  onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  placeholder="Type contact no."
+                />
+              </div>
             </div>
 
-            {/* Third Row: Date of Birth and Contact Number */}
+            {/* Fourth Row: Date of Birth and Upload Photo */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-2">
@@ -351,17 +384,30 @@ export default function AddStudentPage() {
                 )}
               </div>
               <div>
-                <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                  Contact Number
+                <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload Photo
                 </label>
-                <input
-                  id="contactNumber"
-                  type="tel"
-                  value={formData.contactNumber}
-                  onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
-                  placeholder="Type contact no."
-                />
+                <div className="relative">
+                  <input
+                    id="photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFormData({ ...formData, photo: e.target.files?.[0] || null })}
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor="photo"
+                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus-within:ring-2 focus-within:ring-[color:var(--primary-500)] focus-within:border-[color:var(--primary-500)] focus-within:bg-white transition-all duration-200 cursor-pointer flex items-center justify-between hover:bg-[var(--primary-100)]"
+                  >
+                    <span className={`${formData.photo ? 'text-gray-700' : 'text-gray-500'}`}>
+                      {formData.photo ? formData.photo.name : 'Upload photo'}
+                    </span>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <title>Upload icon</title>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -417,7 +463,7 @@ export default function AddStudentPage() {
               </div>
             </div>
 
-            {/* Fifth Row: Section and Upload Photo */}
+            {/* Fifth Row: Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="section" className="block text-sm font-medium text-gray-700 mb-2">
@@ -450,30 +496,7 @@ export default function AddStudentPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Photo
-                </label>
-                <div className="relative">
-                  <input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setFormData({ ...formData, photo: e.target.files?.[0] || null })}
-                    className="sr-only"
-                  />
-                  <label
-                    htmlFor="photo"
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus-within:ring-2 focus-within:ring-[color:var(--primary-500)] focus-within:border-[color:var(--primary-500)] focus-within:bg-white transition-all duration-200 cursor-pointer flex items-center justify-between hover:bg-[var(--primary-100)]"
-                  >
-                    <span className={`${formData.photo ? 'text-gray-700' : 'text-gray-500'}`}>
-                      {formData.photo ? formData.photo.name : 'Upload photo'}
-                    </span>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <title>Upload icon</title>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  </label>
-                </div>
+                {/* Empty space for layout */}
               </div>
             </div>
 
