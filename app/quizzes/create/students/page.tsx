@@ -269,6 +269,21 @@ export default function StudentsSelectionPage() {
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button - appears when students are selected */}
+      {selectedStudents.length > 0 && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={handleAssignToAll}
+            className="px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 bg-[color:var(--primary-600)] hover:bg-[color:var(--primary-700)] text-[color:var(--primary-foreground)]"
+          >
+            Continue ({selectedStudents.length} selected)
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

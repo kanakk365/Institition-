@@ -21,7 +21,6 @@ import {
   Plus,
   Eye,
   User,
-  UserCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
@@ -90,7 +89,7 @@ const navigationItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: GraduationCap, label: "Class", href: "/classes" },
   { icon: Users, label: "Students", href: "/students" },
-  { icon: UserCheck, label: "Teachers", href: "/teachers" },
+  { icon: User, label: "Teachers", href: "/teachers" },
   { icon: FlaskConical, label: "Project Lab", href: "/projects" },
   { icon: FileQuestion, label: "Quizzes", href: "/quizzes" },
   { icon: FileText, label: "Exams", href: "/exams" },
@@ -472,15 +471,51 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                       href={subItem.href}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                        pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
+                        (() => {
+                          // Special logic for quiz sub-navigation
+                          if (item.label === "Quizzes") {
+                            if (subItem.name === "View Quiz") {
+                              // View Quiz: gray when not exactly on /quizzes
+                              return pathname !== "/quizzes" && "text-gray-600 hover:bg-gray-50";
+                            } else if (subItem.name === "Create Quiz") {
+                              // Create Quiz: gray when not on quiz-related paths (except main /quizzes)
+                              return !(pathname !== "/quizzes" && pathname.startsWith("/quizzes")) && "text-gray-600 hover:bg-gray-50";
+                            }
+                          }
+                          // Default logic for other sub-navigations
+                          return pathname !== subItem.href && !pathname.startsWith(subItem.href) && "text-gray-600 hover:bg-gray-50";
+                        })(),
                       )}
                       style={
-                        pathname === subItem.href
-                          ? {
-                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                        (() => {
+                          // Special logic for quiz sub-navigation
+                          if (item.label === "Quizzes") {
+                            if (subItem.name === "View Quiz") {
+                              // View Quiz: highlighted only when exactly on /quizzes (main quiz list)
+                              return pathname === "/quizzes"
+                                ? {
+                                    backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                    color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                  }
+                                : undefined;
+                            } else if (subItem.name === "Create Quiz") {
+                              // Create Quiz: highlighted when on any quiz-related path except the main /quizzes page
+                              return pathname !== "/quizzes" && pathname.startsWith("/quizzes")
+                                ? {
+                                    backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                    color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                  }
+                                : undefined;
                             }
-                          : undefined
+                          }
+                          // Default logic for other sub-navigations
+                          return pathname === subItem.href || pathname.startsWith(subItem.href)
+                            ? {
+                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
+                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                              }
+                            : undefined;
+                        })()
                       }
                     >
                       <subItem.icon className="w-4 h-4" />
