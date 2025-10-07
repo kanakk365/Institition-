@@ -21,6 +21,7 @@ import {
   Plus,
   Eye,
   User,
+  UserCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/AuthContext"
@@ -89,6 +90,7 @@ const navigationItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: GraduationCap, label: "Class", href: "/classes" },
   { icon: Users, label: "Students", href: "/students" },
+  { icon: UserCheck, label: "Teachers", href: "/teachers" },
   { icon: FlaskConical, label: "Project Lab", href: "/projects" },
   { icon: FileQuestion, label: "Quizzes", href: "/quizzes" },
   { icon: FileText, label: "Exams", href: "/exams" },
@@ -326,6 +328,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
         {navigationItems.map((item) => {
           const isActive = pathname === item.href ||
             (item.label === "Students" && pathname.startsWith("/students")) ||
+            (item.label === "Teachers" && pathname.startsWith("/teachers")) ||
             (item.label === "Quizzes" && pathname.startsWith("/quizzes")) ||
             (item.label === "Project Lab" && pathname.startsWith("/projects")) ||
             (item.label === "Exams" && pathname.startsWith("/exams")) ||
