@@ -351,13 +351,15 @@ export default function SuperAdminDashboard() {
                         router.push("/students");
                       } else if (key === "totalGrades") {
                         router.push("/classes");
+                      } else if (key === "totalTeachers") {
+                        router.push("/teachers");
                       }
                     };
 
                     return (
                       <Card
                         key={key}
-                        className={`bg-white border-0 shadow-sm ${key === "totalStudents" || key === "totalGrades" ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+                        className={`bg-white border-0 shadow-sm ${key === "totalStudents" || key === "totalGrades" || key === "totalTeachers" ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
                         onClick={handleCardClick}
                       >
                         <CardContent className="p-6">

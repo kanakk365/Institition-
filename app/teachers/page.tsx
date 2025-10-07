@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, Loader2, Plus } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Search, Loader2, Plus, User } from "lucide-react"
 import { Sidebar } from "@/components/ui/sidebar"
 import api from "@/lib/api"
 
@@ -58,6 +60,17 @@ export default function TeachersDashboard() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const limit = 10
+
+  // Modal and form state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
+  const [submitSuccess, setSubmitSuccess] = useState("")
 
   // Fetch teachers from API
   const fetchTeachers = useCallback(async (page = 1, search = "") => {
@@ -128,6 +141,67 @@ export default function TeachersDashboard() {
     }
   }
 
+  // Handle form input changes
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    // Clear any previous error messages when user starts typing
+    if (submitError) setSubmitError("")
+    if (submitSuccess) setSubmitSuccess("")
+  }
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+      setSubmitError("Please fill in all fields")
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      setSubmitError("")
+
+      const response = await api.post('/institution-admin/teacher', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password
+      })
+
+      if (response.data.success) {
+        setSubmitSuccess("Teacher created successfully!")
+        setFormData({ name: "", email: "", password: "" })
+
+        // Close modal after a short delay
+        setTimeout(() => {
+          setIsModalOpen(false)
+          setSubmitSuccess("")
+          // Refresh the teachers list
+          fetchTeachers(currentPage, searchQuery)
+        }, 1500)
+      } else {
+        setSubmitError(response.data.message || "Failed to create teacher")
+      }
+    } catch (err: any) {
+      setSubmitError(err.response?.data?.message || "Failed to create teacher")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Reset form when modal opens
+  const handleModalOpen = (open: boolean) => {
+    setIsModalOpen(open)
+    if (open) {
+      setFormData({ name: "", email: "", password: "" })
+      setSubmitError("")
+      setSubmitSuccess("")
+    }
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
@@ -161,13 +235,111 @@ export default function TeachersDashboard() {
 
                 <div className="flex items-center gap-3">
                   {/* Add New Teacher Button */}
-                  <Button
-                    onClick={() => router.push('/teachers/add')}
-                    className="border-0 rounded-lg px-4 py-2 button-primary"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add new teacher
-                  </Button>
+                  <Dialog open={isModalOpen} onOpenChange={handleModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="border-0 rounded-lg px-4 py-2 button-primary">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add new teacher
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Add New Teacher</DialogTitle>
+                        <DialogDescription>
+                          Create a new teacher account with the required information.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Error Message */}
+                        {submitError && (
+                          <div className="bg-red-50 border-l-4 border-red-400 p-3 rounded">
+                            <p className="text-sm text-red-700">{submitError}</p>
+                          </div>
+                        )}
+
+                        {/* Success Message */}
+                        {submitSuccess && (
+                          <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded">
+                            <p className="text-sm text-green-700">{submitSuccess}</p>
+                          </div>
+                        )}
+
+                        {/* Name Field */}
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            type="text"
+                            placeholder="Enter teacher's full name"
+                            value={formData.name}
+                            onChange={(e) => handleInputChange("name", e.target.value)}
+                            disabled={isSubmitting}
+                            required
+                          />
+                        </div>
+
+                        {/* Email Field */}
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="teacher@school.com"
+                            value={formData.email}
+                            onChange={(e) => handleInputChange("email", e.target.value)}
+                            disabled={isSubmitting}
+                            required
+                          />
+                        </div>
+
+                        {/* Password Field */}
+                        <div className="space-y-2">
+                          <Label htmlFor="password">Password *</Label>
+                          <Input
+                            id="password"
+                            type="password"
+                            placeholder="Enter secure password"
+                            value={formData.password}
+                            onChange={(e) => handleInputChange("password", e.target.value)}
+                            disabled={isSubmitting}
+                            required
+                          />
+                          <p className="text-xs text-gray-500">
+                            Password must be at least 8 characters long
+                          </p>
+                        </div>
+
+                        <DialogFooter className="gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={isSubmitting}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="button-primary"
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Creating...
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Create Teacher
+                              </>
+                            )}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
 
                   {/* Search Bar */}
                   <div className="relative">
