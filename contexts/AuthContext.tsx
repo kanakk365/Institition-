@@ -39,6 +39,76 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Derive readable foreground color (black/white) based on background color brightness
+const getContrastingTextColor = (hexColor?: string | null): string => {
+  if (!hexColor) return '#ffffff';
+  let hex = hexColor.trim();
+  if (hex.startsWith('oklch')) {
+    // If someone passes an oklch color, default to white foreground
+    return '#ffffff';
+  }
+  if (hex.startsWith('#')) hex = hex.slice(1);
+  if (hex.length === 3) {
+    hex = hex.split('').map((c) => c + c).join('');
+  }
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  // YIQ formula
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? '#000000' : '#ffffff';
+};
+
+// Apply institution theme colors to CSS variables at runtime
+const applyInstitutionTheme = (institution: Institution | null) => {
+  if (typeof window === 'undefined') return;
+  const root = document.documentElement;
+  const primary = institution?.primaryColor || null;
+  const secondary = institution?.secondaryColor || null;
+
+  if (primary) {
+    root.style.setProperty('--primary', primary);
+    root.style.setProperty('--primary-foreground', getContrastingTextColor(primary));
+  } else {
+    root.style.removeProperty('--primary');
+    root.style.removeProperty('--primary-foreground');
+  }
+
+  if (secondary) {
+    root.style.setProperty('--secondary', secondary);
+    root.style.setProperty('--secondary-foreground', getContrastingTextColor(secondary));
+  } else {
+    root.style.removeProperty('--secondary');
+    root.style.removeProperty('--secondary-foreground');
+  }
+
+  // Persist theme in localStorage for fast rehydration
+  try {
+    const theme = { primary, secondary };
+    localStorage.setItem('institution-theme', JSON.stringify(theme));
+  } catch {}
+};
+
+// Restore theme from localStorage if present
+const restoreThemeFromStorage = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const stored = localStorage.getItem('institution-theme');
+    if (!stored) return;
+    const theme = JSON.parse(stored) as { primary?: string | null; secondary?: string | null } | null;
+    if (!theme) return;
+    const root = document.documentElement;
+    if (theme.primary) {
+      root.style.setProperty('--primary', theme.primary);
+      root.style.setProperty('--primary-foreground', getContrastingTextColor(theme.primary));
+    }
+    if (theme.secondary) {
+      root.style.setProperty('--secondary', theme.secondary);
+      root.style.setProperty('--secondary-foreground', getContrastingTextColor(theme.secondary));
+    }
+  } catch {}
+};
+
 const formatInstitutionData = (rawInstitution: unknown): Institution => {
   const record = (rawInstitution ?? {}) as Record<string, unknown>;
 
@@ -105,6 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           setInstitution(formattedInstitution);
           setIsAuthenticated(true);
+          // Apply theme from cookie data
+          applyInstitutionTheme(formattedInstitution);
         }
       } catch {
         // Invalid data, clear cookies
@@ -113,6 +185,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         Cookies.remove('institution-data');
       }
     }
+    // If no cookie-based theme was applied, try restoring from localStorage for faster paint
+    restoreThemeFromStorage();
     setLoading(false);
   }, []);
 
@@ -136,9 +210,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         Cookies.set('auth', JSON.stringify(authData), { expires: 7 }); // Main auth cookie
         Cookies.set('auth-token', token, { expires: 7 }); // Token only
         Cookies.set('institution-data', JSON.stringify(formattedInstitution), { expires: 7 }); // Institution data
+        // Also store in localStorage as requested
+        try {
+          localStorage.setItem('auth', JSON.stringify(authData));
+          localStorage.setItem('auth-token', token);
+          localStorage.setItem('institution-data', JSON.stringify(formattedInstitution));
+        } catch {}
         
         setInstitution(formattedInstitution);
         setIsAuthenticated(true);
+        // Apply and persist theme colors from login response
+        applyInstitutionTheme(formattedInstitution);
         
         return { success: true, message: response.data.message };
       } else {
@@ -181,6 +263,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     Cookies.remove('auth');
     Cookies.remove('auth-token');
     Cookies.remove('institution-data');
+    
+    // Clear localStorage entries
+    try {
+      localStorage.removeItem('auth');
+      localStorage.removeItem('auth-token');
+      localStorage.removeItem('institution-data');
+      localStorage.removeItem('institution-theme');
+    } catch {}
+    
+    // Reset theme overrides to fall back to CSS defaults
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--primary-foreground');
+      root.style.removeProperty('--secondary');
+      root.style.removeProperty('--secondary-foreground');
+    }
     
     // Check cookies after removal
     console.log('Cookies after removal:', {
