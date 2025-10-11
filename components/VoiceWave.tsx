@@ -138,8 +138,8 @@ export default function AIMessage({ text }: AIMessageProps) {
             style={
               isSpeaking && currentWordIndex === index
                 ? {
-                    backgroundColor: "color-mix(in oklch, var(--primary) 20%, white 80%)",
-                    color: "color-mix(in oklch, var(--primary) 70%, black 30%)",
+                    background: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 20%, white 80%) 0%, color-mix(in oklch, var(--secondary) 20%, white 80%) 100%)",
+                    color: "color-mix(in oklch, var(--primary-foreground) 70%, var(--muted-foreground) 30%)",
                   }
                 : undefined
             }
@@ -155,7 +155,7 @@ export default function AIMessage({ text }: AIMessageProps) {
   return (
     <div
       className="bg-[rgba(34,34,34,0.9)] text-white rounded-2xl px-5 py-3 border"
-      style={{ borderColor: "color-mix(in oklch, var(--primary) 35%, transparent 65%)" }}
+      style={{ borderColor: "color-mix(in oklch, var(--primary) 35%, transparent 65%)", borderImage: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 35%, transparent 65%) 0%, color-mix(in oklch, var(--secondary) 35%, transparent 65%) 100%) 1" }}
     >
       {/* Message content */}
       {showMessage && (
@@ -228,7 +228,7 @@ export default function AIMessage({ text }: AIMessageProps) {
             <div className="flex gap-1">
               <div
                 className="w-1 h-3 rounded animate-pulse"
-                style={{ backgroundColor: "color-mix(in oklch, var(--primary) 70%, white 30%)" }}
+                style={{ background: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 70%, white 30%) 0%, color-mix(in oklch, var(--secondary) 70%, white 30%) 100%)" }}
               ></div>
               <div
                 className="w-1 h-3 rounded animate-pulse"

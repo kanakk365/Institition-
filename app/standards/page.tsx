@@ -451,7 +451,7 @@ export default function StandardsPage() {
                           <div
                             className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg"
                             style={{
-                              backgroundColor: "var(--primary)",
+                              background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)",
                               color: "var(--primary-foreground)",
                             }}
                           >

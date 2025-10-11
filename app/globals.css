@@ -230,31 +230,31 @@ label, .label, input, textarea, select {
 
 
 .point-ask-gradient {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
 }
 .point-ask-gradient-text {
   color: var(--primary);
 }
 
 .button-primary {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   color: var(--primary-foreground);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .button-primary:hover,
 .button-primary:focus-visible {
-  background-color: color-mix(in oklch, var(--primary) 85%, black 15%);
+  background: linear-gradient(135deg, color-mix(in oklch, var(--primary) 85%, black 15%) 0%, color-mix(in oklch, var(--secondary) 85%, black 15%) 100%);
   box-shadow: var(--shadow-md);
 }
 
 .button-primary:disabled {
-  background-color: color-mix(in oklch, var(--primary) 60%, var(--muted) 40%);
+  background: linear-gradient(135deg, color-mix(in oklch, var(--primary) 60%, var(--muted) 40%) 0%, color-mix(in oklch, var(--secondary) 60%, var(--muted) 40%) 100%);
   color: color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%);
 }
 
 .sidebar-indicator {
-  background: var(--primary);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
   position: fixed;
   left: 0;
   z-index: 50;
@@ -336,7 +336,7 @@ label, .label, input, textarea, select {
 }
 
 .scrollbar-thumb-green-300::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklch, var(--primary) 65%, white 35%);
+  background: linear-gradient(135deg, color-mix(in oklch, var(--primary) 65%, white 35%) 0%, color-mix(in oklch, var(--secondary) 65%, white 35%) 100%);
   border-radius: 6px;
 }
 

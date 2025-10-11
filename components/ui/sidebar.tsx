@@ -352,7 +352,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -371,7 +371,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -390,7 +390,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -409,7 +409,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -428,7 +428,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -447,7 +447,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-[var(--primary)] text-[color:var(--primary-foreground)]"
+                      ? "bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-[color:var(--primary-foreground)]"
                       : "text-gray-700 hover:bg-gray-100",
                     isCollapsed && "justify-center gap-0 px-0",
                   )}
@@ -494,16 +494,16 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                               // View Quiz: highlighted only when exactly on /quizzes (main quiz list)
                               return pathname === "/quizzes"
                                 ? {
-                                    backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                    color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                    backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                    color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                                   }
                                 : undefined;
                             } else if (subItem.name === "Create Quiz") {
                               // Create Quiz: highlighted when on any quiz-related path except the main /quizzes page
                               return pathname !== "/quizzes" && pathname.startsWith("/quizzes")
                                 ? {
-                                    backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                    color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                    backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                    color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                                   }
                                 : undefined;
                             }
@@ -511,8 +511,8 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                           // Default logic for other sub-navigations
                           return pathname === subItem.href || pathname.startsWith(subItem.href)
                             ? {
-                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                               }
                             : undefined;
                         })()
@@ -539,8 +539,8 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                       style={
                         pathname === subItem.href
                           ? {
-                              backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                              color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                              backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                              color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                             }
                           : undefined
                       }
@@ -569,19 +569,19 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                           isCreateExamActive
-                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            ? "bg-[linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)] text-[color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)]"
                             : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
                         )}
                         style={
                           isCreateExamActive
                             ? {
-                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                               }
                             : pathname === subItem.href
                               ? {
-                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                  backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                  color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                                 }
                               : undefined
                         }
@@ -612,19 +612,19 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                           isCreateCustomExamActive
-                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            ? "bg-[linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)] text-[color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)]"
                             : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
                         )}
                         style={
                           isCreateCustomExamActive
                             ? {
-                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                               }
                             : pathname === subItem.href
                               ? {
-                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                  backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                  color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                                 }
                               : undefined
                         }
@@ -655,19 +655,19 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                           isCreateCustomQuizActive
-                            ? "bg-[color-mix(in oklch, var(--primary) 15%, white 85%)] text-[color-mix(in oklch, var(--primary) 75%, black 25%)]"
+                            ? "bg-[linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)] text-[color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)]"
                             : pathname !== subItem.href && "text-gray-600 hover:bg-gray-50",
                         )}
                         style={
                           isCreateCustomQuizActive
                             ? {
-                                backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                               }
                             : pathname === subItem.href
                               ? {
-                                  backgroundColor: "color-mix(in oklch, var(--primary) 15%, white 85%)",
-                                  color: "color-mix(in oklch, var(--primary) 75%, black 25%)",
+                                  backgroundColor: "linear-gradient(135deg, color-mix(in oklch, var(--primary) 15%, white 85%) 0%, color-mix(in oklch, var(--secondary) 15%, white 85%) 100%)",
+                                  color: "color-mix(in oklch, var(--primary-foreground) 80%, var(--muted-foreground) 20%)",
                                 }
                               : undefined
                         }
@@ -714,7 +714,7 @@ export function Sidebar({ className, collapsed: externalCollapsed, setCollapsed:
                 <AvatarFallback
                   className="font-semibold"
                   style={{
-                    backgroundColor: "var(--primary)",
+                    background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)",
                     color: "var(--primary-foreground)",
                   }}
                 >

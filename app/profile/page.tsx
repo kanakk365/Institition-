@@ -222,7 +222,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg">
+                    <div className="p-4 bg-gradient-to-r from-[color:var(--primary-50)] to-[color:var(--primary-100)] rounded-lg">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-600">Account Status</span>
                         <div className="flex items-center gap-1">

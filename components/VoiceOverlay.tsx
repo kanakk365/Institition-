@@ -26,14 +26,14 @@ export default function VoiceOverlay({ isListening, onStop, transcript = "" }: V
             }}
           >
             {/* Pulsing rings */}
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: "var(--primary)" }}></div>
+            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)" }}></div>
             <div
               className="absolute inset-2 rounded-full animate-ping opacity-15"
-              style={{ backgroundColor: "var(--primary)", animationDelay: "0.5s" }}
+              style={{ background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)", animationDelay: "0.5s" }}
             ></div>
             
             {/* Microphone icon */}
-            <div className="w-16 h-16 rounded-full flex items-center justify-center relative z-10" style={{ backgroundColor: "var(--primary)" }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center relative z-10" style={{ background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)" }}>
               <svg
                 width="32"
                 height="32"
@@ -56,7 +56,7 @@ export default function VoiceOverlay({ isListening, onStop, transcript = "" }: V
             {transcript ? (
               <p className="text-white text-lg leading-relaxed">
                 {transcript}
-                <span className="inline-block w-0.5 h-6 ml-1 animate-pulse" style={{ backgroundColor: "var(--primary)" }} />
+                <span className="inline-block w-0.5 h-6 ml-1 animate-pulse" style={{ background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)" }} />
               </p>
             ) : (
               <p className="text-white/60 text-lg italic">

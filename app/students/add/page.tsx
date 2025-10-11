@@ -245,7 +245,7 @@ export default function AddStudentPage() {
         {/* Success/Error Messages */}
         {success && (
           <div
-            className="mb-6 p-4 border rounded-lg bg-[var(--primary-50)] border-[color:var(--primary-200)] text-[color:var(--primary-700)]"
+            className="mb-6 p-4 border rounded-lg bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border-[color:var(--primary-200)] text-[color:var(--primary-700)]"
           >
             {success}
           </div>
@@ -270,7 +270,7 @@ export default function AddStudentPage() {
                   type="text"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="First name of the student"
                   required
                 />
@@ -284,7 +284,7 @@ export default function AddStudentPage() {
                   type="text"
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="Last name of the student"
                   required
                 />
@@ -302,7 +302,7 @@ export default function AddStudentPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="student@example.com"
                   required
                 />
@@ -316,7 +316,7 @@ export default function AddStudentPage() {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="Enter password"
                   required
                 />
@@ -334,7 +334,7 @@ export default function AddStudentPage() {
                     id="gender"
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'Male' | 'Female' | 'Other' })}
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -357,7 +357,7 @@ export default function AddStudentPage() {
                   type="tel"
                   value={formData.contactNumber}
                   onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="Type contact no."
                 />
               </div>
@@ -376,7 +376,7 @@ export default function AddStudentPage() {
                   onChange={(e) => handleDobChange(e.target.value)}
                   min={minDob}
                   max={maxDob}
-                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200"
                   placeholder="Enter DOB"
                 />
                 {dobError && (
@@ -397,7 +397,7 @@ export default function AddStudentPage() {
                   />
                   <label
                     htmlFor="photo"
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus-within:ring-2 focus-within:ring-[color:var(--primary-500)] focus-within:border-[color:var(--primary-500)] focus-within:bg-white transition-all duration-200 cursor-pointer flex items-center justify-between hover:bg-[var(--primary-100)]"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus-within:ring-2 focus-within:ring-[color:var(--primary-500)] focus-within:border-[color:var(--primary-500)] focus-within:bg-white transition-all duration-200 cursor-pointer flex items-center justify-between hover:bg-gradient-to-r hover:from-[color-mix(in_oklch,var(--primary)_10%,white_90%)] hover:to-[color-mix(in_oklch,var(--secondary)_10%,white_90%)]"
                   >
                     <span className={`${formData.photo ? 'text-gray-700' : 'text-gray-500'}`}>
                       {formData.photo ? formData.photo.name : 'Upload photo'}
@@ -422,7 +422,7 @@ export default function AddStudentPage() {
                     id="institution"
                     value={formData.institution}
                     onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
                   >
                     <option value="greenschool">greenschool</option>
                   </select>
@@ -443,7 +443,7 @@ export default function AddStudentPage() {
                     id="gradeClass"
                     value={formData.gradeClass}
                     onChange={(e) => setFormData({ ...formData, gradeClass: e.target.value, section: '' })}
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
                     required
                   >
                     <option value="">Select Grade</option>
@@ -474,7 +474,7 @@ export default function AddStudentPage() {
                     id="section"
                     value={formData.section}
                     onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                    className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-[color-mix(in_oklch,var(--primary)_5%,white_95%)] to-[color-mix(in_oklch,var(--secondary)_5%,white_95%)] border border-[color:var(--primary-200)] rounded-lg focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-[color:var(--primary-500)] focus:bg-white transition-all duration-200 appearance-none"
                     required
                     disabled={!formData.gradeClass}
                   >
