@@ -164,7 +164,7 @@ export default function CustomExamFormPage() {
       <div className="max-w-3xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-sm p-8">
           <div className="mb-6">
-            <button type="button" onClick={() => router.back()} className="text-gray-600 mb-4">← Back</button>
+            <button type="button" onClick={() => router.push("/custom-exam/students")} className="text-gray-600 mb-4">← Back</button>
             <h1 className="text-2xl font-semibold mb-2">Create Custom Exam</h1>
             <p className="text-gray-600">Fill in the exam details below</p>
           </div>
@@ -172,10 +172,10 @@ export default function CustomExamFormPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Exam Title</label>
-              <Input 
-                placeholder="e.g., Mid-Term Mathematics" 
-                value={data.examDetails.title} 
-                onChange={(e) => handleInputChange('title', e.target.value)} 
+              <Input
+                placeholder="Enter title"
+                value={data.examDetails.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
               />
             </div>
 
@@ -186,7 +186,7 @@ export default function CustomExamFormPage() {
                 onValueChange={(value) => handleInputChange('subject', value)}
               >
                 <SelectTrigger className="w-full bg-white border border-gray-300 h-10">
-                  <SelectValue placeholder="Select subject" />
+                  <SelectValue placeholder="Enter subject" />
                 </SelectTrigger>
                 <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto">
                   {SUBJECT_OPTIONS.map((option) => (
@@ -201,7 +201,7 @@ export default function CustomExamFormPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
               <Input
-                placeholder="e.g., Algebra"
+                placeholder="Enter topic"
                 value={data.examDetails.topic}
                 onChange={(e) => handleInputChange('topic', e.target.value)}
               />
@@ -211,7 +211,7 @@ export default function CustomExamFormPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Time Limit (minutes)</label>
               <Input
                 type="number"
-                placeholder="60"
+                placeholder="Enter time limit"
                 value={data.examDetails.timeLimitMinutes}
                 onChange={(e) => handleInputChange('timeLimitMinutes', parseInt(e.target.value) || 0)}
               />
@@ -220,7 +220,7 @@ export default function CustomExamFormPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Instructions</label>
               <Textarea
-                placeholder="Please read all questions carefully..."
+                placeholder="Enter instructions"
                 value={data.examDetails.instructions}
                 onChange={(e) => handleInputChange('instructions', e.target.value)}
               />
@@ -229,7 +229,7 @@ export default function CustomExamFormPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
               <Textarea
-                placeholder="Add any additional notes or description..."
+                placeholder="Enter description"
                 value={data.description}
                 onChange={(e) => handleDescriptionChange(e.target.value)}
                 rows={3}
@@ -336,7 +336,7 @@ export default function CustomExamFormPage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Marks</label>
                             <Input
                               type="number"
-                              placeholder="1"
+                              placeholder="Enter marks"
                               value={question.marks}
                               onChange={(e) => updateQuestion(index, 'marks', parseInt(e.target.value) || 1)}
                             />
@@ -356,9 +356,9 @@ export default function CustomExamFormPage() {
                                     }
                                   />
                                   <Input
-                                    placeholder={`Option ${optIndex + 1}`}
+                                    placeholder={`Enter option ${optIndex + 1}`}
                                     value={option.optionText}
-                                    onChange={(e) => 
+                                    onChange={(e) =>
                                       updateOption(index, optIndex, 'optionText', e.target.value)
                                     }
                                     className="flex-1"

@@ -83,13 +83,19 @@ export default function CreateExamAssignPage() {
 
   useEffect(() => {
     // Get data from sessionStorage
-    const students = sessionStorage.getItem('examSelectedStudents')
+    const studentsData = sessionStorage.getItem('examSelectedStudents')
     const gradeSection = sessionStorage.getItem('examGradeAndSection')
-    
-    if (students) {
-      setSelectedStudents(JSON.parse(students))
+
+    if (studentsData) {
+      const parsedData = JSON.parse(studentsData)
+      // Handle both old format (direct array) and new format (object with selectedStudents)
+      if (Array.isArray(parsedData)) {
+        setSelectedStudents(parsedData)
+      } else if (parsedData.selectedStudents) {
+        setSelectedStudents(parsedData.selectedStudents)
+      }
     }
-    
+
     if (gradeSection) {
       setGradeAndSection(JSON.parse(gradeSection))
     }
@@ -310,7 +316,7 @@ export default function CreateExamAssignPage() {
                   onValueChange={(value) => handleInputChange('subject', value)}
                 >
                   <SelectTrigger id="subject" className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
-                    <SelectValue placeholder="Select subject" />
+                    <SelectValue placeholder="Enter subject" />
                   </SelectTrigger>
                   <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
                     {SUBJECT_OPTIONS.map((option) => (
@@ -328,7 +334,7 @@ export default function CreateExamAssignPage() {
                 </Label>
                 <Input
                   id="topic"
-                  placeholder="e.g., Wave Motion and Sound, Algebra, Organic Chemistry"
+                  placeholder="Enter title"
                   value={formData.topic}
                   onChange={(e) => handleInputChange('topic', e.target.value)}
                   className="  bg-[var(--primary-50)] border border-[color:var(--primary-100)]  px-5 rounded-lg text-gray-700 placeholder:text-gray-400"
