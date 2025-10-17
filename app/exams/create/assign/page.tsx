@@ -16,6 +16,7 @@ interface ExamFormData {
   level: string
   questionType: string
   bloomTaxonomy: string
+  description: string
   questionConfig: {
     questionType: string
     config: {
@@ -63,6 +64,7 @@ export default function CreateExamAssignPage() {
     level: 'medium',
     questionType: 'both',
     bloomTaxonomy: 'remember',
+    description: '',
     questionConfig: {
       questionType: 'both',
       config: {
@@ -235,7 +237,8 @@ export default function CreateExamAssignPage() {
         level: examFormData.level,
         questionType: examFormData.questionType,
         questionConfig: examFormData.questionConfig,
-        bloomTaxanomy: examFormData.bloomTaxonomy
+        bloomTaxanomy: examFormData.bloomTaxonomy,
+        description: examFormData.description
       }
       
       console.log('Generating exam with data:', apiPayload)
@@ -308,7 +311,7 @@ export default function CreateExamAssignPage() {
           examData={{
             title: examFormData?.topic || '',
             subject: examFormData?.subject || '',
-            description: `${examFormData?.questionType} questions at ${examFormData?.level} level (${examFormData?.bloomTaxonomy} level)`,
+            description: examFormData?.description || '',
             examType: 'Questions & Answers', // Hardcoded as per edit hint
             dueDate: new Date().toLocaleDateString(),
             timeLimit: '60 min',
@@ -402,7 +405,7 @@ export default function CreateExamAssignPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="space-y-4">
                 <Label htmlFor="level" className="text-sm font-medium text-gray-700">
                   Difficulty Level
@@ -444,6 +447,20 @@ export default function CreateExamAssignPage() {
             </div>
 
             <div className="space-y-6">
+              <div className="space-y-4">
+                <Label htmlFor="description" className="text-sm font-medium text-gray-700">
+                  Description
+                </Label>
+                <textarea
+                  id="description"
+                  placeholder="Enter exam description (optional)"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 bg-[var(--primary-50)] border border-[color:var(--primary-100)] rounded-lg text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary-400)]"
+                />
+              </div>
+
               <div className="space-y-4">
                 <Label htmlFor="questionType" className="text-sm font-medium text-gray-700">
                   Question Type Configuration
