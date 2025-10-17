@@ -303,28 +303,30 @@ export default function CreateExamAssignPage() {
 
   if (currentStep === "confirmation") {
     return (
-      <ExamView
-        examData={{
-          title: examFormData?.topic || '',
-          subject: examFormData?.subject || '',
-          description: `${examFormData?.questionType} questions at ${examFormData?.level} level (${examFormData?.bloomTaxonomy} level)`,
-          examType: 'Questions & Answers', // Hardcoded as per edit hint
-          dueDate: new Date().toLocaleDateString(),
-          timeLimit: '60 min',
-          topic: examFormData?.topic || '',
-          difficulty: examFormData?.level || '',
-          bloomTaxonomy: examFormData?.bloomTaxonomy || 'remember',
-          questionCount: ((examFormData?.questionConfig.config.long?.count || 0) + (examFormData?.questionConfig.config.short?.count || 0)).toString()
-        }}
-        gradeAndSection={gradeAndSection}
-        selectedStudents={selectedStudents}
-        onCancel={handleCancel}
-        onEdit={handleBackToForm}
-        onGenerate={handleGenerateAndAssign}
-        loading={loading}
-        error={error}
-        success={generatedExamId ? 'Exam generated and assigned successfully!' : ''}
-      />
+      <div className="flex justify-center">
+        <ExamView
+          examData={{
+            title: examFormData?.topic || '',
+            subject: examFormData?.subject || '',
+            description: `${examFormData?.questionType} questions at ${examFormData?.level} level (${examFormData?.bloomTaxonomy} level)`,
+            examType: 'Questions & Answers', // Hardcoded as per edit hint
+            dueDate: new Date().toLocaleDateString(),
+            timeLimit: '60 min',
+            topic: examFormData?.topic || '',
+            difficulty: examFormData?.level || '',
+            bloomTaxonomy: examFormData?.bloomTaxonomy || 'remember',
+            questionCount: ((examFormData?.questionConfig.config.long?.count || 0) + (examFormData?.questionConfig.config.short?.count || 0)).toString()
+          }}
+          gradeAndSection={gradeAndSection}
+          selectedStudents={selectedStudents}
+          onCancel={handleCancel}
+          onEdit={handleBackToForm}
+          onGenerate={handleGenerateAndAssign}
+          loading={loading}
+          error={error}
+          success={generatedExamId ? 'Exam generated and assigned successfully!' : ''}
+        />
+      </div>
     )
   }
 

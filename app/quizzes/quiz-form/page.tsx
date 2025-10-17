@@ -23,6 +23,7 @@ interface QuizFormData {
   dueDate: string;
   timeLimit: string;
   bloomTaxonomy: string;
+  description: string;
 }
 
 interface QuizGenerationPayload {
@@ -34,6 +35,7 @@ interface QuizGenerationPayload {
     marksPerQuestion: number;
   };
   bloomTaxanomy: string;
+  description: string;
 }
 
 export default function QuizFormPage() {
@@ -44,7 +46,8 @@ export default function QuizFormPage() {
     questionCount: '',
     dueDate: '',
     timeLimit: '',
-    bloomTaxonomy: 'remember'
+    bloomTaxonomy: 'remember',
+    description: ''
   });
 
   const [selectedStudents, setSelectedStudents] = useState<SelectedStudent[]>([]);
@@ -113,7 +116,8 @@ export default function QuizFormPage() {
           count: parseInt(formData.questionCount) || 10,
           marksPerQuestion: 2
         },
-        bloomTaxanomy: formData.bloomTaxonomy
+        bloomTaxanomy: formData.bloomTaxonomy,
+        description: formData.description
       };
 
       console.log('Generating quiz with payload:', payload);
@@ -247,6 +251,12 @@ export default function QuizFormPage() {
                       <div className="font-medium text-gray-900">{selectedStudents.length} selected</div>
                     </div>
                   </div>
+                  {formData.description && (
+                    <div>
+                      <div className="text-sm text-gray-600 mb-1">Description</div>
+                      <div className="font-medium text-gray-900 whitespace-pre-wrap">{formData.description}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -484,6 +494,19 @@ export default function QuizFormPage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Description Field */}
+            <div className="space-y-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+              <textarea
+                id="description"
+                placeholder="Enter quiz description (optional)"
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-[color:var(--primary-200)] focus:border-[color:var(--primary-400)] focus:ring-[color:var(--primary-300)] bg-[var(--primary-50)] text-[color:var(--primary-800)] placeholder:text-gray-500 rounded-lg"
+              />
             </div>
 
             {/* Action Buttons */}
