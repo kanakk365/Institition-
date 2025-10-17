@@ -62,13 +62,14 @@ export function RecentStudents({ students = defaultStudents }: RecentStudentsPro
     <div className="overflow-x-auto">
       <div className="min-w-full">
         {/* Header */}
-  <div className="grid grid-cols-6 gap-4 p-4 bg-gradient-to-r from-[color:var(--primary-500)] to-[color:var(--primary-600)] text-[color:var(--primary-foreground)] text-sm font-medium rounded-t-lg">
-          <div>Sr no.</div>
+  <div className="grid grid-cols-5 gap-4 p-4 bg-gradient-to-r from-[color:var(--primary-500)] to-[color:var(--primary-600)] text-[color:var(--primary-foreground)] text-sm font-medium rounded-t-lg">
           <div>Student Name</div>
-          <div>Email</div>
+          <div className="col-span-2">Email</div>
           <div>Class/Section</div>
-          <div>Joined</div>
-          <div>Action</div>
+          <div className="flex justify-between items-center">
+            <span>Joined</span>
+            <span>Action</span>
+          </div>
         </div>
 
         {/* Rows */}
@@ -76,16 +77,15 @@ export function RecentStudents({ students = defaultStudents }: RecentStudentsPro
           {students.map((student, index) => (
             <div
               key={student.id}
-              className={`grid grid-cols-6 gap-4 p-4 text-sm border-b border-[color:var(--primary-100)] transition-colors hover:bg-[color:var(--primary-100)] ${
+              className={`grid grid-cols-5 gap-4 p-4 text-sm border-b border-[color:var(--primary-100)] transition-colors hover:bg-[color:var(--primary-100)] ${
                 index % 2 === 0 ? "bg-white" : "bg-[var(--primary-50)]"
               }`}
             >
-              <div className="text-[color:var(--primary-700)]">{index + 1}</div>
               <div className="font-medium text-[color:var(--primary-800)]">{student.name}</div>
-              <div className="text-[color:var(--primary-700)]">{student.email}</div>
+              <div className="col-span-2 text-[color:var(--primary-700)]">{student.email}</div>
               <div className="text-[color:var(--primary-700)]">{student.class} - {student.section}</div>
-              <div className="text-[color:var(--primary-700)]">{formatDate(student.joinedAt)}</div>
-              <div>
+              <div className="flex justify-between items-center">
+                <span className="text-[color:var(--primary-700)]">{formatDate(student.joinedAt)}</span>
                 <Button size="sm" className="button-primary px-4 py-1 text-xs shadow-sm">
                   View
                 </Button>
