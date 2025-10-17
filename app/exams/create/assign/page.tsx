@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation"
 interface ExamFormData {
   subject: string
   topic: string
-  examType: string
   level: string
   questionType: string
   bloomTaxonomy: string
@@ -61,7 +60,6 @@ export default function CreateExamAssignPage() {
   const [formData, setFormData] = useState<ExamFormData>({
     subject: '',
     topic: '',
-    examType: 'Questions & Answers',
     level: 'medium',
     questionType: 'both',
     bloomTaxonomy: 'remember',
@@ -230,22 +228,10 @@ export default function CreateExamAssignPage() {
     
     try {
       // Step 1: Generate the exam
-      // Map form examType to API-accepted values
-      const getApiExamType = (formExamType: string) => {
-        switch (formExamType) {
-          case 'Multiple Choice':
-          case 'Mixed Format':
-            return 'Quiz'
-          case 'Questions & Answers':
-          default:
-            return 'Questions & Answers'
-        }
-      }
-      
       const apiPayload = {
         subject: examFormData.subject,
         topic: examFormData.topic,
-        examType: getApiExamType(examFormData.examType),
+        examType: 'Questions & Answers', // Hardcoded as per edit hint
         level: examFormData.level,
         questionType: examFormData.questionType,
         questionConfig: examFormData.questionConfig,
@@ -322,7 +308,7 @@ export default function CreateExamAssignPage() {
           title: examFormData?.topic || '',
           subject: examFormData?.subject || '',
           description: `${examFormData?.questionType} questions at ${examFormData?.level} level (${examFormData?.bloomTaxonomy} level)`,
-          examType: examFormData?.examType || '',
+          examType: 'Questions & Answers', // Hardcoded as per edit hint
           dueDate: new Date().toLocaleDateString(),
           timeLimit: '60 min',
           topic: examFormData?.topic || '',
@@ -415,25 +401,6 @@ export default function CreateExamAssignPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              <div className="space-y-4">
-                <Label htmlFor="examType" className="text-sm font-medium text-gray-700">
-                  Exam Type
-                </Label>
-                <div className="relative">
-                  <Select value={formData.examType} onValueChange={(value) => handleInputChange('examType', value)}>
-                    <SelectTrigger className="bg-[var(--primary-50)] border border-[color:var(--primary-100)] h-14 px-5 rounded-lg text-gray-700 w-full justify-between">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[9999] bg-white shadow-lg border border-gray-200">
-                      <SelectItem value="Quiz">Quiz</SelectItem>
-                      <SelectItem value="Questions & Answers">Questions & Answers</SelectItem>
-                      <SelectItem value="Multiple Choice">Multiple Choice</SelectItem>
-                      <SelectItem value="Mixed Format">Mixed Format</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               <div className="space-y-4">
                 <Label htmlFor="level" className="text-sm font-medium text-gray-700">
                   Difficulty Level
