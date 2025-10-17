@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ExamView } from "@/components/exam-view"
+import { ExamView, ExamViewStudent } from "@/components/exam-view"
 import api from "@/lib/api"
 import { SUBJECT_OPTIONS } from "@/lib/subjects"
 import { useRouter } from "next/navigation"
@@ -32,12 +32,11 @@ interface ExamFormData {
   }
 }
 
-interface Student {
-  _id: string
-  name: string
-  email: string
-  rollNumber: string
-  status: 'active' | 'inactive'
+type Student = ExamViewStudent & {
+  id?: string
+  firstName?: string
+  lastName?: string
+  isActive?: boolean
 }
 
 interface GradeAndSection {
@@ -81,6 +80,75 @@ export default function CreateExamAssignPage() {
     }
   })
 
+  const normalizeStudentsFromStorage = (data: unknown): Student[] => {
+    if (!data) return []
+
+    const toStudent = (item: unknown): Student | null => {
+      if (!item) return null
+
+      if (typeof item === 'string') {
+        const fallback: Student = {
+          _id: item,
+          id: item,
+          name: 'Unknown Student',
+          email: '',
+          rollNumber: '',
+          status: 'active'
+        }
+        return fallback
+      }
+
+      if (typeof item === 'object') {
+        const student = item as Record<string, unknown>
+        const firstName = typeof student.firstName === 'string' ? student.firstName : ''
+        const lastName = typeof student.lastName === 'string' ? student.lastName : ''
+        const derivedName = `${firstName} ${lastName}`.trim()
+        const id = typeof student._id === 'string'
+          ? student._id
+          : typeof student.id === 'string'
+            ? student.id
+            : ''
+
+        if (!id) {
+          return null
+        }
+
+        const normalized: Student = {
+          _id: id,
+          id: typeof student.id === 'string' ? student.id : id,
+          name: typeof student.name === 'string' && student.name.length > 0
+            ? student.name
+            : derivedName.length > 0
+              ? derivedName
+              : 'Unknown Student',
+          email: typeof student.email === 'string' ? student.email : '',
+          rollNumber: typeof student.rollNumber === 'string' ? student.rollNumber : `${id}`,
+          status: typeof student.status === 'string'
+            ? (student.status === 'active' ? 'active' : 'inactive')
+            : typeof student.isActive === 'boolean'
+              ? (student.isActive ? 'active' : 'inactive')
+              : 'active',
+          firstName: typeof student.firstName === 'string' ? student.firstName : undefined,
+          lastName: typeof student.lastName === 'string' ? student.lastName : undefined,
+          isActive: typeof student.isActive === 'boolean' ? student.isActive : undefined,
+        }
+        return normalized
+      }
+
+      return null
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(toStudent).filter((student): student is Student => Boolean(student))
+    }
+
+    if (typeof data === 'object' && data !== null && 'selectedStudents' in data) {
+      return normalizeStudentsFromStorage((data as { selectedStudents: unknown }).selectedStudents)
+    }
+
+    return []
+  }
+
   useEffect(() => {
     // Get data from sessionStorage
     const studentsData = sessionStorage.getItem('examSelectedStudents')
@@ -88,12 +156,8 @@ export default function CreateExamAssignPage() {
 
     if (studentsData) {
       const parsedData = JSON.parse(studentsData)
-      // Handle both old format (direct array) and new format (object with selectedStudents)
-      if (Array.isArray(parsedData)) {
-        setSelectedStudents(parsedData)
-      } else if (parsedData.selectedStudents) {
-        setSelectedStudents(parsedData.selectedStudents)
-      }
+      const normalizedStudents = normalizeStudentsFromStorage(parsedData)
+      setSelectedStudents(normalizedStudents)
     }
 
     if (gradeSection) {
@@ -201,7 +265,14 @@ export default function CreateExamAssignPage() {
 
       // Step 2: Assign exam to selected students
       if (selectedStudents.length > 0) {
-        const studentIds = selectedStudents.map(student => student._id)
+        const studentIds = selectedStudents
+          .map(student => student._id || student.id)
+          .filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
+
+        if (studentIds.length === 0) {
+          throw new Error('No student IDs found for assignment. Please reselect students and try again.')
+        }
+
         const assignPayload = {
           examId: examId,
           studentIds: studentIds

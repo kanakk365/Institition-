@@ -16,7 +16,7 @@ interface ExamData {
   bloomTaxonomy: string
 }
 
-interface Student {
+export interface ExamViewStudent {
   _id: string
   name: string
   email: string
@@ -34,7 +34,7 @@ interface GradeAndSection {
 interface ExamViewProps {
   examData?: ExamData
   gradeAndSection?: GradeAndSection | null
-  selectedStudents?: Student[]
+  selectedStudents?: ExamViewStudent[]
   onCancel?: () => void
   onEdit?: () => void
   onGenerate?: () => void

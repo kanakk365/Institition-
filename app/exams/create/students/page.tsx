@@ -9,27 +9,27 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import api from "@/lib/api"
 
 interface Student {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  dob: string;
-  gender: string;
-  phone: string;
-  photoUrl?: string;
-  isActive: boolean;
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  dob: string
+  gender: string
+  phone: string
+  photoUrl?: string
+  isActive: boolean
   institution: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
   standard: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
   studentSection: {
-    id: string;
-    name: string;
-  };
+    id: string
+    name: string
+  }
 }
 
 interface StudentsResponse {
@@ -148,7 +148,18 @@ export default function StudentsSelectionPage() {
       const selectionData = {
         standardName: data.standardName,
         sectionName: data.sectionName,
-        selectedStudents: students.filter(s => selectedStudents.includes(s.id))
+        selectedStudents: students
+          .filter(s => selectedStudents.includes(s.id))
+          .map(student => ({
+            id: student.id,
+            _id: student.id,
+            name: `${student.firstName} ${student.lastName}`.trim(),
+            firstName: student.firstName,
+            lastName: student.lastName,
+            email: student.email,
+            rollNumber: `${student.standard.name}-${student.studentSection.name}-${student.id}`,
+            status: student.isActive ? 'active' : 'inactive'
+          }))
       };
       sessionStorage.setItem('examSelectedStudents', JSON.stringify(selectionData));
       router.push('/exams/create/assign');
